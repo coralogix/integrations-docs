@@ -1,0 +1,3 @@
+Coralogix integrations documentation
+====================================
+
