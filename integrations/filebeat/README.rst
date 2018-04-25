@@ -1,6 +1,14 @@
 Filebeat integration
 ====================
 
+.. image:: https://www.elastic.co/assets/blt86db0e71b172187c/icon-filebeat-bb.svg
+   :height: 100px
+   :width: 100 px
+   :scale: 50 %
+   :alt: Filebeat
+   :align: left
+   :target: https://www.elastic.co/products/beats/filebeat
+
 *Coralogix* provides a seamless integration with ``Filebeat`` so you can send your logs from anywhere and parse them according to your needs.
 
 Prerequisites
