@@ -27,3 +27,5 @@ Integrations list:
 * `Kubernetes <https://github.com/coralogix/fluentd-coralogix-image/blob/master/examples/kubernetes/README.rst>`_
 * `Filebeat <integrations/filebeat/README.rst>`_
 * `FluentD <integrations/fluentd/README.rst>`_
+* `Winlogbeat <integrations/winlogbeat/README.rst>`_
+* `Docker gelf <https://github.com/coralogix/docker-gelf-example/blob/master/README.rst>`_
