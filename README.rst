@@ -21,4 +21,7 @@ Coralogix integrations documentation
     :alt: GitHub contributors
     :target: https://github.com/coralogix/integrations-docs/graphs/contributors
 
+Integrations list:
+------------------
+
 * `Kubernetes <https://github.com/coralogix/fluentd-coralogix-image/blob/master/examples/kubernetes/README.rst>`_
