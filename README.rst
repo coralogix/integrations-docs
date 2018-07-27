@@ -28,3 +28,5 @@ Integrations list:
 * `Filebeat <integrations/filebeat/README.rst>`_
 * `FluentD <integrations/fluentd/README.rst>`_
 * `Winlogbeat <integrations/winlogbeat/README.rst>`_
+* `Python <https://python-coralogix-sdk.readthedocs.io/en/latest/>`_
+* `NodeJS <https://github.com/coralogix/nodejs-coralogix-sdk/blob/master/README.md>`_
