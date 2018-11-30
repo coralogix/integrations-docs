@@ -35,7 +35,7 @@ Configuration
 On host machine
 ~~~~~~~~~~~~~~~
 
-Open your ``Filebeat`` configuration file and configure it to use ``Logstash`` (Make sure you disable ``Elastic`` output). For more information about configuring filebeat to use logstash please refer to: `<https://www.elastic.co/guide/en/beats/filebeat/current/config-filebeat-logstash.html>`_
+Open your ``Filebeat`` configuration file and configure it to use ``Logstash`` (Make sure you disable ``Elasticsearch`` output). For more information about configuring filebeat to use logstash please refer to: `<https://www.elastic.co/guide/en/beats/filebeat/current/config-filebeat-logstash.html>`_
 
 Point your ``Filebeat`` to output to *Coralogix* logstash server:
 
@@ -55,13 +55,12 @@ Here is a basic example of **filebeat.yml**:
     - type: log
       paths:
       - "/var/log/your_app/your_app.log"
-      document_type: <your-application-name>
       fields_under_root: true
-    fields:
-      PRIVATE_KEY: "YOUR_PRIVATE_KEY"
-      COMPANY_ID: Your company ID
-      APP_NAME: "APP_NAME"
-      SUB_SYSTEM: "SUB_NAME"
+      fields:
+        PRIVATE_KEY: "YOUR_PRIVATE_KEY"
+        COMPANY_ID: Your company ID
+        APP_NAME: "APP_NAME"
+        SUB_SYSTEM: "SUB_NAME"
 
     #----------------------------- Logstash output --------------------------------
 
@@ -77,9 +76,9 @@ With Docker
 
 Build Docker image with your **filebeat.yml**:
 
-.. code-block::
+.. code-block:: dockerfile
 
-    FROM docker.elastic.co/beats/filebeat:6.2.3
+    FROM docker.elastic.co/beats/filebeat:6.5.1
 
     LABEL description="Filebeat logs watcher"
 
@@ -89,8 +88,7 @@ Build Docker image with your **filebeat.yml**:
 
     # Changing permission of configuration file
     USER root
-    RUN chown filebeat /usr/share/filebeat/filebeat.yml && \
-        chmod go-w /usr/share/filebeat/filebeat.yml
+    RUN chown root:filebeat /usr/share/filebeat/filebeat.yml
 
     # Return to deploy user
     USER filebeat
