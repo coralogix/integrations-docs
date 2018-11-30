@@ -95,4 +95,12 @@ For instance, in the above example, if you write:
 then only the value of ``kubernetes`` key will be sent.
 If you do want to send the entire message then you can just delete this key.
 
+If you want to use some field as ``timestamp`` in Coralogix, you can use **timestamp_key_name** option:
+
+.. code-block:: ruby
+
+    timestamp_key_name @timestamp
+
+then you will see that logs records have timestamp from this field.
+
 Restart ``FluentD``.
