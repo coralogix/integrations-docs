@@ -55,12 +55,13 @@ Here is a basic example of **filebeat.yml**:
     - type: log
       paths:
       - "/var/log/your_app/your_app.log"
-      fields_under_root: true
-      fields:
-        PRIVATE_KEY: "YOUR_PRIVATE_KEY"
-        COMPANY_ID: Your company ID
-        APP_NAME: "APP_NAME"
-        SUB_SYSTEM: "SUB_NAME"
+
+    fields_under_root: true
+    fields:
+      PRIVATE_KEY: "YOUR_PRIVATE_KEY"
+      COMPANY_ID: Your company ID
+      APP_NAME: "APP_NAME"
+      SUB_SYSTEM: "SUB_NAME"
 
     #----------------------------- Logstash output --------------------------------
 
@@ -70,6 +71,8 @@ Here is a basic example of **filebeat.yml**:
       index: logstash
       tls.certificate_authorities: ["<path to folder with certificates>/ca.crt"]
       ssl.certificate_authorities: ["<path to folder with certificates>/ca.crt"]
+
+**Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *true*.
 
 With Docker
 ~~~~~~~~~~~
