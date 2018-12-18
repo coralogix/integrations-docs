@@ -72,7 +72,7 @@ Here is a basic example of **filebeat.yml**:
       tls.certificate_authorities: ["<path to folder with certificates>/ca.crt"]
       ssl.certificate_authorities: ["<path to folder with certificates>/ca.crt"]
 
-**Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *true*.
+**Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *false*.
 
 With Docker
 ~~~~~~~~~~~
