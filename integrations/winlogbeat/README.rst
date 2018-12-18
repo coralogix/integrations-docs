@@ -50,21 +50,19 @@ Here is a basic example of **winlogbeat.yml**:
 
     winlogbeat.event_logs:
     - name: Application
-      fields_under_root: true
       ignore_older: 72h
     - name: Security
-      fields_under_root: true
     - name: System
-      fields_under_root: true
 
+    fields_under_root: true
     fields:
-        PRIVATE_KEY: "YOUR_PRIVATE_KEY"
-        COMPANY_ID: Your company ID
-        APP_NAME: "APP_NAME"
-        SUB_SYSTEM: "windows_events"
+      PRIVATE_KEY: "YOUR_PRIVATE_KEY"
+      COMPANY_ID: Your company ID
+      APP_NAME: "APP_NAME"
+      SUB_SYSTEM: "windows_events"
 
     setup.template.settings:
-        index.number_of_shards: 3
+      index.number_of_shards: 3
 
     #----------------------------- Logstash output --------------------------------
 
@@ -74,6 +72,8 @@ Here is a basic example of **winlogbeat.yml**:
         index: logstash
         tls.certificate_authorities: ["<path to folder with certificates>\\ca.crt"]
         ssl.certificate_authorities: ["<path to folder with certificates>\\ca.crt"]
+
+**Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *true*.
 
 Test configuration
 ------------------
