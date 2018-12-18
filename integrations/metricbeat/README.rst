@@ -55,17 +55,20 @@ Here is a basic example of **metricbeat.yml** file for collecting metrics from `
       hosts: ["redis:6379"]
       metricsets: ["info", "keyspace"]
       period: 10s
-      fields_under_root: true
-      fields:
-        PRIVATE_KEY: "YOUR_PRIVATE_KEY"
-        COMPANY_ID: Your company ID
-        APP_NAME: "APP_NAME"
-        SUB_SYSTEM: "SUB_NAME"
+
+    fields_under_root: true
+    fields:
+      PRIVATE_KEY: "YOUR_PRIVATE_KEY"
+      COMPANY_ID: Your company ID
+      APP_NAME: "APP_NAME"
+      SUB_SYSTEM: "SUB_NAME"
 
     output.logstash:
       enabled: true
       hosts: ["logstashserver.coralogix.com:5015"]
       ssl.certificate_authorities: ["<path to folder with certificates>/ca.crt"]
+
+**Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *true*.
 
 With Docker
 ~~~~~~~~~~~
@@ -109,4 +112,4 @@ You can deploy example with *Docker-compose*:
           - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
           - ./ca.crt:/etc/ssl/certs/Coralogix.crt:ro
 
-Don't forget to change owner of **metricbeat.yml** to *root*(uid=1000).
+Don't forget to change owner of **metricbeat.yml** file to *root* (uid=1000).
