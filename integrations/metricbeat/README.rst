@@ -9,7 +9,7 @@ Metricbeat integration
    :align: left
    :target: https://www.elastic.co/products/beats/metricbeat
 
-*Coralogix* provides a seamless integration with ``Metricbeat`` so you can send your metrics data from anywhere and parse them according to your needs.
+*Coralogix* provides a seamless integration with ``Metricbeat`` so you can send your metric data from anywhere and create beautiful visualizations to it.
 
 
 Prerequisites
@@ -73,7 +73,7 @@ Here is a basic example of **metricbeat.yml** file for collecting metrics from `
 With Docker
 ~~~~~~~~~~~
 
-Build Docker image with your **metricbeat.yml**:
+Build a Docker image with your **metricbeat.yml**:
 
 .. code-block:: dockerfile
 
