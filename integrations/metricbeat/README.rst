@@ -68,7 +68,7 @@ Here is a basic example of **metricbeat.yml** file for collecting metrics from `
       hosts: ["logstashserver.coralogix.com:5015"]
       ssl.certificate_authorities: ["<path to folder with certificates>/ca.crt"]
 
-**Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *false*.
+**Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *true*.
 
 With Docker
 ~~~~~~~~~~~
