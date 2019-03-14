@@ -152,4 +152,4 @@ Setup
 .. image:: images/4.png
    :alt: Lambda basic settings
 
-7. Click ``“Save”``
+7. Click ``“Save”``.
