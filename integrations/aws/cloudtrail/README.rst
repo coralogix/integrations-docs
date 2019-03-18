@@ -9,7 +9,7 @@ AWS CloudTrail
    :align: left
    :target: https://aws.amazon.com/ru/vpc/
 
-*Coralogix* provides a predefined Lambda function to forward your ``AWS CloudTrail`` logs straight to *Coralogix*.
+*Coralogix* provides a predefined Lambda function to forward your ``CloudTrail`` logs straight to *Coralogix*.
 
 Setup
 -----
