@@ -1,7 +1,7 @@
 AWS VPC Flow Logs
 =================
 
-.. image:: images/amazon-vpc.png
+.. image:: images/amazon-vpc.jpg
    :height: 50px
    :width: 100px
    :scale: 50 %
@@ -46,7 +46,7 @@ Setup
 .. image:: images/4.png
    :alt: Lambda trigger setup
 
-6. Increase ``Memory`` to ``1024MB`` and ``Timeout`` to ``1 min``.
+6. Increase ``Memory`` to ``1024MB`` and ``Timeout`` to ``30 sec``.
 
 .. image:: images/5.png
    :alt: Lambda basic settings
