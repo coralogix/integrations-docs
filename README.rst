@@ -34,7 +34,6 @@ Integrations list:
 * `Python <https://python-coralogix-sdk.readthedocs.io/en/latest/>`_
 * `NodeJS <https://github.com/coralogix/nodejs-coralogix-sdk/blob/master/README.md>`_
 * `PHP <https://php-coralogix-sdk.readthedocs.io/en/latest/>`_
-* AWS
-   - Kinesis
-        + `with AWS Lambda <integrations/aws/kinesis/lambda/README.rst>`_
-        + `with Logstash <integrations/aws/kinesis/logstash/README.rst>`_
+* `AWS Kinesis(with Lambda) <integrations/aws/kinesis/lambda/README.rst>`_
+* `AWS Kinesis(with Logstash) <integrations/aws/kinesis/logstash/README.rst>`_
+* `AWS VPC <integrations/aws/vpc/README.rst>`_
