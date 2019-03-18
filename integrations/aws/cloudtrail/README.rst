@@ -1,20 +1,20 @@
-AWS VPC Flow Logs
-=================
+AWS CloudTrail
+==============
 
 .. image:: images/amazon-cloudtrail.png
    :height: 50px
    :width: 100px
    :scale: 50 %
-   :alt: AWS VPC Flow Logs
+   :alt: AWS CloudTrail
    :align: left
    :target: https://aws.amazon.com/ru/vpc/
 
-*Coralogix* provides a predefined Lambda function to forward your ``AWS Cloud Trail`` logs straight to *Coralogix*.
+*Coralogix* provides a predefined Lambda function to forward your ``AWS CloudTrail`` logs straight to *Coralogix*.
 
 Setup
 -----
 
-1. Create ``AWS Cloud Trail`` trail and setup storage in your S3 bucket:
+1. Create ``AWS CloudTrail`` trail and setup storage in your S3 bucket:
 
 .. image:: images/6.png
    :alt: CloudTrail Setup
@@ -24,7 +24,7 @@ Setup
 .. image:: images/1.png
    :alt: Lambda settings
 
-3. At ``“Code entry type”`` choose ``“Upload a ZIP file”`` and upload ``“s3ToCoralogixVPC.zip”``:
+3. At ``“Code entry type”`` choose ``“Upload a ZIP file”`` and upload ``“s3ToCoralogixCloudTrail.zip”``:
 
 `<https://s3-eu-west-1.amazonaws.com/coralogix-public/tools/s3ToCoralogixCloudTrail.zip>`_
 
