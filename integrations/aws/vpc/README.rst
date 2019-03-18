@@ -46,7 +46,7 @@ Setup
 .. image:: images/4.png
    :alt: Lambda trigger setup
 
-6. Increase ``Memory`` to ``1024MB`` and ``Timeout`` to ``30 sec``.
+6. Increase ``Memory`` to ``1024MB`` and ``Timeout`` to ``30 sec``:
 
 .. image:: images/5.png
    :alt: Lambda basic settings
