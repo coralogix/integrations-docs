@@ -1,31 +1,32 @@
-AWS VPC Flow Logs
-=================
+AWS CloudTrail
+==============
 
-.. image:: images/amazon-vpc.jpg
+.. image:: images/amazon-cloudtrail.png
    :height: 50px
    :width: 100px
    :scale: 50 %
-   :alt: AWS VPC Flow Logs
+   :alt: AWS CloudTrail
    :align: left
    :target: https://aws.amazon.com/ru/vpc/
 
-*Coralogix* provides a predefined Lambda function to forward your ``VPC Flow Logs`` flow logs straight to *Coralogix*.
+*Coralogix* provides a predefined Lambda function to forward your ``AWS CloudTrail`` logs straight to *Coralogix*.
 
 Setup
 -----
 
-1. Setup delivery of your VPC Flow Logs to S3 bucket:
+1. Create ``AWS CloudTrail`` trail and setup storage in your S3 bucket:
 
-`<https://docs.aws.amazon.com/en_us/vpc/latest/userguide/flow-logs-s3.html>`_
+.. image:: images/6.png
+   :alt: CloudTrail Setup
 
 2. Create an ``“author from scratch”`` Node.js 8.10 runtime lambda with an S3 read permissions:
 
 .. image:: images/1.png
    :alt: Lambda settings
 
-3. At ``“Code entry type”`` choose ``“Upload a ZIP file”`` and upload ``“s3ToCoralogixVPC.zip”``:
+3. At ``“Code entry type”`` choose ``“Upload a ZIP file”`` and upload ``“s3ToCoralogixCloudTrail.zip”``:
 
-`<https://s3-eu-west-1.amazonaws.com/coralogix-public/tools/s3ToCoralogixVPC.zip>`_
+`<https://s3-eu-west-1.amazonaws.com/coralogix-public/tools/s3ToCoralogixCloudTrail.zip>`_
 
 .. image:: images/2.png
    :alt: Lambda code upload
@@ -46,7 +47,7 @@ Setup
 .. image:: images/4.png
    :alt: Lambda trigger setup
 
-6. Increase ``Memory`` to ``1024MB`` and ``Timeout`` to ``30 sec``:
+6. Increase ``Memory`` to ``1024MB`` and ``Timeout`` to ``1min``:
 
 .. image:: images/5.png
    :alt: Lambda basic settings
