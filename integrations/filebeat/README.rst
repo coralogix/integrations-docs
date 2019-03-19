@@ -59,7 +59,7 @@ Here is a basic example of **filebeat.yml**:
     fields_under_root: true
     fields:
       PRIVATE_KEY: "YOUR_PRIVATE_KEY"
-      COMPANY_ID: Your company ID
+      COMPANY_ID: YOUR_COMPANY_ID
       APP_NAME: "APP_NAME"
       SUB_SYSTEM: "SUB_NAME"
 

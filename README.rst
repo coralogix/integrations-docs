@@ -38,6 +38,7 @@ Logs/Metrics collectors
 * `Auditbeat <integrations/auditbeat/README.rst>`_
 * `Filebeat <integrations/filebeat/README.rst>`_
 * `Metricbeat <integrations/metricbeat/README.rst>`_
+* `Packetbeat <integrations/packetbeat/README.rst>`_
 * `Winlogbeat <integrations/winlogbeat/README.rst>`_
 
 SDK's
