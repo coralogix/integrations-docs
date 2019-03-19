@@ -1,21 +1,21 @@
-Winlogbeat integration
+Packetbeat integration
 ======================
 
-.. image:: https://images.contentstack.io/v3/assets/bltefdd0b53724fa2ce/bltc7dbc20cb410c803/5bd9e3e734f567415a6543fb/icon-winlogbeat-bb.svg
+.. image:: https://images.contentstack.io/v3/assets/bltefdd0b53724fa2ce/bltafdcc4bf9e229b98/5bd9e3f9b2202f965f253391/icon-packetbeat-bb.svg
    :height: 50px
    :width: 50 px
    :scale: 50 %
-   :alt: Winlogbeat
+   :alt: Packetbeat
    :align: left
-   :target: https://www.elastic.co/products/beats/winlogbeat
+   :target: https://www.elastic.co/products/beats/packetbeat
 
-*Coralogix* provides a seamless integration with ``Winlogbeat`` so you can send your logs from anywhere and parse them according to your needs.
+*Coralogix* provides a seamless integration with ``Packetbeat`` so you can send your network usage logs from anywhere and parse them according to your needs.
 
 
 Prerequisites
 -------------
 
-* Have ``Winlogbeat`` installed, for more information on how to install: `<https://www.elastic.co/guide/en/beats/winlogbeat/current/winlogbeat-installation.html>`_
+* Have ``Packetbeat`` installed, for more information on how to install: `<https://www.elastic.co/guide/en/beats/packetbeat/current/packetbeat-installation.html>`_
 * Install our SSL certificate to your system for providing secure connection. You can download it by link: `<https://coralogixstorage.blob.core.windows.net/syslog-configs/certificate/ca.crt>`_
 
 General
@@ -32,9 +32,9 @@ General
 Configuration
 -------------
 
-Open your ``Winlogbeat`` configuration file and configure it to use ``Logstash``. For more information about configuring ``Winlogbeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/winlogbeat/current/config-winlogbeat-logstash.html>`_
+Open your ``Packetbeat`` configuration file and configure it to use ``Logstash``. For more information about configuring ``Packetbeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/packetbeat/current/config-packetbeat-logstash.html>`_
 
-Point your ``Winlogbeat`` to output to *Coralogix* logstash server:
+Point your ``Packetbeat`` to output to *Coralogix* logstash server:
 
 ::
 
@@ -42,47 +42,31 @@ Point your ``Winlogbeat`` to output to *Coralogix* logstash server:
 
 In addition you should add *Coralogix* configuration from the **General** section.
 
-Here is a basic example of **winlogbeat.yml**:
+Here is a basic example of **packetbeat.yml** for watching HTTP packages:
 
 .. code-block:: yaml
 
-    #=========================== Winlogbeat Event Logs ============================
+    #========================== Network targets to watch ===========================
 
-    winlogbeat.event_logs:
-    - name: Application
-      ignore_older: 72h
-    - name: Security
-    - name: System
+    packetbeat.interfaces.device: any
+    packetbeat.protocols:
+    - type: http
+      ports: [80, 8080, 8000, 5000, 8002]
+      hide_keywords: ["pass", "password", "passwd"]
+      send_headers: ["User-Agent", "Cookie", "Set-Cookie"]
+      split_cookie: true
+      real_ip_header: "X-Forwarded-For"
 
     fields_under_root: true
     fields:
       PRIVATE_KEY: "YOUR_PRIVATE_KEY"
       COMPANY_ID: YOUR_COMPANY_ID
       APP_NAME: "APP_NAME"
-      SUB_SYSTEM: "windows_events"
+      SUB_SYSTEM: "SUB_NAME"
 
     #----------------------------- Logstash output --------------------------------
 
     output.logstash:
         enabled: true
         hosts: ["logstashserver.coralogix.com:5015"]
-        tls.certificate_authorities: ["<path to folder with certificates>\\ca.crt"]
         ssl.certificate_authorities: ["<path to folder with certificates>\\ca.crt"]
-
-Test configuration
-------------------
-
-Before starting test your configuration:
-
-.. code-block:: bat
-
-    PS C:\Program Files\Winlogbeat> .\winlogbeat.exe test config -c .\winlogbeat.yml -e
-
-Start Winlogbeat
-----------------
-
-Start your ``Winlogbeat`` service:
-
-.. code-block:: bat
-
-    PS C:\Program Files\Winlogbeat> Start-Service winlogbeat
