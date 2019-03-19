@@ -32,7 +32,7 @@ General
 Configuration
 -------------
 
-Open your ``Winlogbeat`` configuration file and configure it to use ``Logstash``. For more information about configuring ``Filebeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/winlogbeat/current/config-winlogbeat-logstash.html>`_
+Open your ``Winlogbeat`` configuration file and configure it to use ``Logstash``. For more information about configuring ``Winlogbeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/winlogbeat/current/config-winlogbeat-logstash.html>`_
 
 Point your ``Winlogbeat`` to output to *Coralogix* logstash server:
 
