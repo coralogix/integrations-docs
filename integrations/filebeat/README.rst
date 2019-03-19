@@ -1,7 +1,7 @@
 Filebeat integration
 ====================
 
-.. image:: https://www.elastic.co/assets/blt86db0e71b172187c/icon-filebeat-bb.svg
+.. image:: https://images.contentstack.io/v3/assets/bltefdd0b53724fa2ce/bltd1986faecefe2760/5bd9e39ccc850d3e584b7cc4/icon-filebeat-bb.svg
    :height: 50px
    :width: 50 px
    :scale: 50 %
@@ -35,7 +35,7 @@ Configuration
 On host machine
 ~~~~~~~~~~~~~~~
 
-Open your ``Filebeat`` configuration file and configure it to use ``Logstash`` (Make sure you disable ``Elasticsearch`` output). For more information about configuring filebeat to use logstash please refer to: `<https://www.elastic.co/guide/en/beats/filebeat/current/config-filebeat-logstash.html>`_
+Open your ``Filebeat`` configuration file and configure it to use ``Logstash`` (Make sure you disable ``Elasticsearch`` output). For more information about configuring ``Filebeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/filebeat/current/config-filebeat-logstash.html>`_
 
 Point your ``Filebeat`` to output to *Coralogix* logstash server:
 
@@ -49,9 +49,9 @@ Here is a basic example of **filebeat.yml**:
 
 .. code-block:: yaml
 
-    #=========================== Filebeat prospectors =============================
+    #============================== Filebeat Inputs ===============================
 
-    filebeat.prospectors:
+    filebeat.inputs:
     - type: log
       paths:
       - "/var/log/your_app/your_app.log"
@@ -68,7 +68,6 @@ Here is a basic example of **filebeat.yml**:
     output.logstash:
       enabled: true
       hosts: ["logstashserver.coralogix.com:5015"]
-      index: logstash
       tls.certificate_authorities: ["<path to folder with certificates>/ca.crt"]
       ssl.certificate_authorities: ["<path to folder with certificates>/ca.crt"]
 
@@ -81,7 +80,7 @@ Build Docker image with your **filebeat.yml**:
 
 .. code-block:: dockerfile
 
-    FROM docker.elastic.co/beats/filebeat:6.5.1
+    FROM docker.elastic.co/beats/filebeat:6.6.2
 
     LABEL description="Filebeat logs watcher"
 
@@ -96,4 +95,4 @@ Build Docker image with your **filebeat.yml**:
     # Return to deploy user
     USER filebeat
 
-Before deploying your container **don't forget** mount volume with your logs.
+Before deploying of your container **don't forget** to mount volume with your logs.

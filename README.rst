@@ -30,11 +30,12 @@ Containers
 * `Kubernetes <https://github.com/coralogix/fluentd-coralogix-image/blob/master/examples/kubernetes/README.rst>`_
 * `Docker GELF <https://github.com/coralogix/docker-gelf-example/blob/master/README.rst>`_
 
-Logs collectors
-~~~~~~~~~~~~~~~
+Logs/Metrics collectors
+~~~~~~~~~~~~~~~~~~~~~~~
 
 * `FluentD <integrations/fluentd/README.rst>`_
 * `Logstash <https://github.com/coralogix/logstash-output-coralogix/blob/master/README.md>`_
+* `Auditbeat <integrations/auditbeat/README.rst>`_
 * `Filebeat <integrations/filebeat/README.rst>`_
 * `Metricbeat <integrations/metricbeat/README.rst>`_
 * `Winlogbeat <integrations/winlogbeat/README.rst>`_
@@ -42,8 +43,8 @@ Logs collectors
 SDK's
 ~~~~~
 
-* `Python <https://python-coralogix-sdk.readthedocs.io/en/latest/>`_
 * `NodeJS <https://github.com/coralogix/nodejs-coralogix-sdk/blob/master/README.md>`_
+* `Python <https://python-coralogix-sdk.readthedocs.io/en/latest/>`_
 * `PHP <https://php-coralogix-sdk.readthedocs.io/en/latest/>`_
 
 Amazon Web Services

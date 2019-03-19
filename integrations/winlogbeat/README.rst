@@ -1,7 +1,7 @@
 Winlogbeat integration
 ======================
 
-.. image:: https://www.elastic.co/assets/blte9b3c4b0f121078f/icon-winlogbeat-bb.svg
+.. image:: https://images.contentstack.io/v3/assets/bltefdd0b53724fa2ce/bltc7dbc20cb410c803/5bd9e3e734f567415a6543fb/icon-winlogbeat-bb.svg
    :height: 50px
    :width: 50 px
    :scale: 50 %
@@ -32,7 +32,7 @@ General
 Configuration
 -------------
 
-Open your ``Winlogbeat`` configuration file and configure it to use ``Logstash``. For more information about configuring filebeat to use logstash please refer to: `<https://www.elastic.co/guide/en/beats/winlogbeat/current/config-winlogbeat-logstash.html>`_
+Open your ``Winlogbeat`` configuration file and configure it to use ``Logstash``. For more information about configuring ``Winlogbeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/winlogbeat/current/config-winlogbeat-logstash.html>`_
 
 Point your ``Winlogbeat`` to output to *Coralogix* logstash server:
 
@@ -61,19 +61,13 @@ Here is a basic example of **winlogbeat.yml**:
       APP_NAME: "APP_NAME"
       SUB_SYSTEM: "windows_events"
 
-    setup.template.settings:
-      index.number_of_shards: 3
-
     #----------------------------- Logstash output --------------------------------
 
     output.logstash:
         enabled: true
         hosts: ["logstashserver.coralogix.com:5015"]
-        index: logstash
         tls.certificate_authorities: ["<path to folder with certificates>\\ca.crt"]
         ssl.certificate_authorities: ["<path to folder with certificates>\\ca.crt"]
-
-**Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *true*.
 
 Test configuration
 ------------------

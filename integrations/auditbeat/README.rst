@@ -1,21 +1,21 @@
-Metricbeat integration
-======================
+Auditbeat integration
+=====================
 
-.. image:: https://images.contentstack.io/v3/assets/bltefdd0b53724fa2ce/blted1da1110ae2982e/5c3439b985f098b517e887d9/icon-metrics-bb.svg
+.. image:: https://images.contentstack.io/v3/assets/bltefdd0b53724fa2ce/blt1b4de16c742cd2bf/5bd9e4ab4ed46d9b5fbadd0e/icon-auditbeat-bb.svg
    :height: 50px
    :width: 50 px
    :scale: 50 %
-   :alt: Metricbeat
+   :alt: Auditbeat
    :align: left
-   :target: https://www.elastic.co/products/beats/metricbeat
+   :target: https://www.elastic.co/products/beats/auditbeat
 
-*Coralogix* provides a seamless integration with ``Metricbeat`` so you can send your metric data from anywhere and create beautiful visualizations to it.
+*Coralogix* provides a seamless integration with ``Auditbeat`` so you can send your audit data from anywhere and create beautiful visualizations to it.
 
 
 Prerequisites
 -------------
 
-* Have ``Metricbeat`` installed, for more information on how to install: `<https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-installation.html>`_
+* Have ``Auditbeat`` installed, for more information on how to install: `<https://www.elastic.co/guide/en/beats/auditbeat/current/auditbeat-installation.html>`_
 * Install our SSL certificate to your system for providing secure connection. You can download it by link: `<https://coralogixstorage.blob.core.windows.net/syslog-configs/certificate/ca.crt>`_
 
 General
@@ -35,9 +35,9 @@ Configuration
 On host machine
 ~~~~~~~~~~~~~~~
 
-Open your ``Metricbeat`` configuration file and configure it to use ``Logstash``. For more information about configuring ``Metricbeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/metricbeat/current/logstash-output.html>`_
+Open your ``Auditbeat`` configuration file and configure it to use ``Logstash``. For more information about configuring ``Auditbeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/auditbeat/current/logstash-output.html>`_
 
-Point your ``Metricbeat`` to output to *Coralogix* logstash server:
+Point your ``Auditbeat`` to output to *Coralogix* logstash server:
 
 ::
 
@@ -45,18 +45,21 @@ Point your ``Metricbeat`` to output to *Coralogix* logstash server:
 
 In addition you should add *Coralogix* configuration from the **General** section.
 
-Here is a basic example of **metricbeat.yml** file for collecting metrics from ``Redis`` server:
+Here is a basic example of **auditbeat.yml** file for watching some folders on your server:
 
 .. code-block:: yaml
 
-    #============================= Metricbeat Modules ==============================
+    #============================= Auditbeat Modules ===============================
 
-    metricbeat.modules:
-    - module: redis
+    auditbeat.modules:
+    - module: file_integrity
       enabled: true
-      hosts: ["redis:6379"]
-      metricsets: ["info", "keyspace"]
-      period: 10s
+      paths:
+      - /bin
+      - /usr/bin
+      - /sbin
+      - /usr/sbin
+      - /etc
 
     fields_under_root: true
     fields:
@@ -75,24 +78,24 @@ Here is a basic example of **metricbeat.yml** file for collecting metrics from `
 With Docker
 ~~~~~~~~~~~
 
-Build a Docker image with your **metricbeat.yml**:
+Build a Docker image with your **auditbeat.yml**:
 
 .. code-block:: dockerfile
 
-    FROM docker.elastic.co/beats/metricbeat:6.6.2
+    FROM docker.elastic.co/beats/auditbeat:6.6.2
 
-    LABEL description="Metricbeat metrics data collector"
+    LABEL description="Auditbeat filesystem audit data collector"
 
-    # Adding configuration file and SSL certificates for Metricbeat
-    COPY metricbeat.yml /usr/share/metricbeat/metricbeat.yml
+    # Adding configuration file and SSL certificates for Auditbeat
+    COPY auditbeat.yml /usr/share/auditbeat/auditbeat.yml
     COPY ca.crt /etc/ssl/certs/Coralogix.crt
 
     # Changing permission of configuration file
     USER root
-    RUN chown root:metricbeat /usr/share/metricbeat/metricbeat.yml
+    RUN chown root:auditbeat /usr/share/auditbeat/auditbeat.yml
 
     # Return to deploy user
-    USER metricbeat
+    USER auditbeat
 
 Usage
 -----
@@ -103,15 +106,11 @@ You can deploy example with *Docker-compose*:
 
     version: '3.6'
     services:
-      redis:
-        image: redis:latest
-        container_name: redis
-
-      metricbeat:
-        image: docker.elastic.co/beats/metricbeat:6.6.2
-        container_name: metricbeat
+      auditbeat:
+        image: docker.elastic.co/beats/auditbeat:6.6.2
+        container_name: auditbeat
         volumes:
-          - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+          - ./auditbeat.yml:/usr/share/auditbeat/auditbeat.yml:ro
           - ./ca.crt:/etc/ssl/certs/Coralogix.crt:ro
 
-Don't forget to change owner of **metricbeat.yml** file to *root* (uid=1000).
+Don't forget to change owner of **auditbeat.yml** file to *root* (uid=1000).
