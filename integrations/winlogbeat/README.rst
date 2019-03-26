@@ -23,7 +23,7 @@ General
 
 **Private Key** – A unique ID which represents your company, this Id will be sent to your mail once you register to *Coralogix*.
 
-**Company Id** – A unique number which represents your company. You can get your company id from the settings tab in the *Coralogix* dashbaord.
+**Company Id** – A unique number which represents your company. You can get your company id from the settings tab in the *Coralogix* dashboard.
 
 **Application Name** – The name of your main application, for example, a company named *“SuperData”* would probably insert the *“SuperData”* string parameter or if they want to debug their test environment they might insert the *“SuperData– Test”*.
 
