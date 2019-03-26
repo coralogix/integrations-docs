@@ -34,6 +34,7 @@ Logs/Metrics collectors
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 * `FluentD <integrations/fluentd/README.rst>`_
+* `Fluent-Bit <integrations/fluent-bit/README.rst>`_
 * `Logstash <https://github.com/coralogix/logstash-output-coralogix/blob/master/README.md>`_
 * `Auditbeat <integrations/auditbeat/README.rst>`_
 * `Filebeat <integrations/filebeat/README.rst>`_
