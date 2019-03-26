@@ -34,7 +34,7 @@ Installation
 
 For quick setup of ``Filebeat`` on your server you can use prepared scripts.
 
-Go to the folder with your ``Filebeat`` configuration **(filebeat.yml)** and execute:
+Go to the folder with your ``Filebeat`` configuration file **(filebeat.yml)** and execute:
 
 deb
 ~~~
@@ -52,6 +52,12 @@ rpm
 
 This script will install ``Filebeat`` on your machine, prepare configuration and download
 *Coralogix* SSL certificates.
+
+**Note:** If you want to install specific version of ``Filebeat`` you should to pass version number with environment variable before script run:
+
+.. code-block:: bash
+
+    $ export FILEBEAT_VERSION=6.6.2
 
 Configuration
 -------------
