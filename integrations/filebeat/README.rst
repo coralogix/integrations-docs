@@ -36,7 +36,6 @@ For quick setup of ``Filebeat`` on your server you can use prepared scripts.
 
 Go to the folder with your ``Filebeat`` configuration **(filebeat.yml)** and execute:
 
-
 deb
 ~~~
 
