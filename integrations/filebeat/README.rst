@@ -29,6 +29,36 @@ General
 
 **SubSystem Name** – Your application probably has multiple subsystems, for example: Backend servers, Middleware, Frontend servers etc. in order to help you examine the data you need, inserting the subsystem parameter is vital.
 
+Installation
+------------
+
+For quick setup of ``Filebeat`` on your server you can use prepared scripts.
+
+Go to the folder with your ``Filebeat`` configuration file **(filebeat.yml)** and execute:
+
+deb
+~~~
+
+.. code-block:: bash
+
+    $ curl -sSL https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/scripts/install-deb.sh | bash
+
+rpm
+~~~
+
+.. code-block:: bash
+
+    $ curl -sSL https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/scripts/install-rpm.sh | bash
+
+This script will install ``Filebeat`` on your machine, prepare configuration and download
+*Coralogix* SSL certificates.
+
+**Note:** If you want to install specific version of ``Filebeat`` you should to pass version number with environment variable before script run:
+
+.. code-block:: bash
+
+    $ export FILEBEAT_VERSION=6.6.2
+
 Configuration
 -------------
 
@@ -38,6 +68,12 @@ On host machine
 Open your ``Filebeat`` configuration file and configure it to use ``Logstash`` (Make sure you disable ``Elasticsearch`` output). For more information about configuring ``Filebeat`` to use ``Logstash`` please refer to: `<https://www.elastic.co/guide/en/beats/filebeat/current/config-filebeat-logstash.html>`_
 
 Point your ``Filebeat`` to output to *Coralogix* logstash server:
+
+::
+
+    logstashserver.coralogix.com:5044
+
+or if you want to use encrypted connection **(recommended)**:
 
 ::
 
