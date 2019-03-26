@@ -49,6 +49,11 @@ SDK's
 * `Python <https://python-coralogix-sdk.readthedocs.io/en/latest/>`_
 * `PHP <https://php-coralogix-sdk.readthedocs.io/en/latest/>`_
 
+Servers
+~~~~~~~
+
+* `uWSGI <integrations/uwsgi/README.rst>`_
+
 Amazon Web Services
 ~~~~~~~~~~~~~~~~~~~
 
