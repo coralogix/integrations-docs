@@ -33,11 +33,19 @@ You must provide the following four variables when creating a *Coralogix* logger
 Installation
 ------------
 
-Download plugin binary file:
+Fluent-Bit 0.11.x
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-    $ wget -o /fluent-bit/plugins/out_coralogix.so https://github.com/coralogix/integrations-docs/blob/master/integrations/fluent-bit/out_coralogix.so
+    $ wget -o /fluent-bit/plugins/out_coralogix.so https://github.com/coralogix/integrations-docs/blob/master/integrations/fluent-bit/0.11/out_coralogix.so
+
+Fluent-Bit 0.12.x, 1.x
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    $ wget -o /fluent-bit/plugins/out_coralogix.so https://github.com/coralogix/integrations-docs/blob/master/integrations/fluent-bit/0.12/out_coralogix.so
 
 Configuration
 -------------
@@ -96,13 +104,15 @@ Requirements
 ~~~~~~~~~~~~
 
 * ``Linux`` x64
-* ``Fluent-Bit`` version >= 0.12
 * ``Go`` version >= 1.11.x
 
 Sources
 ~~~~~~~
 
-You can download sources here: `<https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/out_coralogix.go>`_.
+You can download sources here:
+
+* `0.11.x <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/0.11/out_coralogix.go>`_
+* `0.12.x, 1.x <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/0.12/out_coralogix.go>`_
 
 Build
 ~~~~~
