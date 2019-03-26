@@ -119,18 +119,18 @@ func FLBPluginFlush(data unsafe.Pointer, length C.int, tag *C.char) int {
 		}
 
         // Build logs batch
-		batch = append(batch, map[string]interface{}{
-		    "@timestamp": time.Now(),
-		    "type": "fluent-bit",
-		    "host": hostname,
-		    "message": string(json_record[:]),
-		    "fields": map[string]interface{}{
+        batch = append(batch, map[string]interface{}{
+            "@timestamp": time.Now(),
+            "type": "fluent-bit",
+            "host": hostname,
+            "message": string(json_record[:]),
+            "fields": map[string]interface{}{
                 "PRIVATE_KEY": private_key,
                 "COMPANY_ID": company_id,
                 "APP_NAME": app_name,
                 "SUB_SYSTEM": sub_name,
-		    },
-	    })
+            },
+        })
 
         //log.Printf("[CORALOGIX] Sending %d records to %s...\n", len(batch), endpoint)
 	    _, err = connection.Send(batch)
