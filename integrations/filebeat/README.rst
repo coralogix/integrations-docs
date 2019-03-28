@@ -34,7 +34,7 @@ Installation
 
 For quick setup of ``Filebeat`` on your server you can use prepared scripts.
 
-Go to the folder with your ``Filebeat`` configuration file **(filebeat.yml)** and execute:
+Go to the folder with your ``Filebeat`` configuration file **(filebeat.yml)** and execute **(as root)**:
 
 deb
 ~~~
