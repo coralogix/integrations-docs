@@ -1,0 +1,73 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: filebeat-coralogix-config
+  namespace: kube-system
+  labels:
+    k8s-app: filebeat-coralogix-logger
+data:
+  filebeat.yml: |-
+    name: filebeat-coralogix
+    tags: ["kubernetes", "containers"]
+  
+    filebeat.inputs:
+    - type: docker
+      containers.ids:
+      - "*"
+      processors:
+        - add_kubernetes_metadata:
+            in_cluster: true
+
+    http:
+      enabled: true
+      host: "0.0.0.0"
+      port: 5066
+
+    processors:
+    - add_cloud_metadata: ~
+    - drop_event:
+        when:
+          equals:
+            kubernetes.container.name: "filebeat-coralogix"
+    - decode_json_fields:
+        fields: ["message"]
+        process_array: true
+        max_depth: 3
+        target: "message"
+        overwrite_keys: true
+    - dissect:
+        tokenizer: "%{APP_NAME}"
+        field: "kubernetes.namespace"
+        target_prefix: ""
+    - dissect:
+        tokenizer: "%{SUB_SYSTEM}"
+        field: "kubernetes.container.name"
+        target_prefix: ""
+    - rename:
+        fields:
+         - from: "meta.cloud"
+           to: "cloud"
+        ignore_missing: true
+        fail_on_error: true
+    - drop_fields:
+        fields: ["source", "log", "input", "prospector", "stream", "offset", "meta"]
+
+    fields_under_root: true
+    fields:
+      PRIVATE_KEY: '${PRIVATE_KEY:?Private key is required but not specified!}'
+      COMPANY_ID: '${COMPANY_ID:?Company ID is required but not specified!}'
+
+    logging:
+      level: info
+      to_files: true
+      files:
+        path: /var/log/filebeat
+        name: filebeat.log
+        keepfiles: 7
+        permissions: 0644
+
+    output.logstash:
+      enabled: true
+      hosts: ["logstashserver.coralogix.com:5015"]
+      tls.certificate_authorities: ["/coralogix/certs/ca.crt"]
+      ssl.certificate_authorities: ["/coralogix/certs/ca.crt"]

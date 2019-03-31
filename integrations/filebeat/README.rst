@@ -32,7 +32,7 @@ General
 Installation
 ------------
 
-For quick setup of ``Filebeat`` on your server you can use prepared scripts.
+For quick setup of ``Filebeat`` on your server you can use prepared `scripts <https://github.com/coralogix/integrations-docs/tree/master/integrations/filebeat/scripts>`_.
 
 Go to the folder with your ``Filebeat`` configuration file **(filebeat.yml)** and execute **(as root)**:
 
@@ -109,8 +109,8 @@ Here is a basic example of **filebeat.yml**:
 
 **Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *true*.
 
-With Docker
-~~~~~~~~~~~
+Docker
+~~~~~~
 
 Build Docker image with your **filebeat.yml**:
 
@@ -132,3 +132,70 @@ Build Docker image with your **filebeat.yml**:
     USER filebeat
 
 Before deploying of your container **don't forget** to mount volume with your logs.
+
+Kubernetes
+~~~~~~~~~~
+
+.. image:: https://img.shields.io/badge/Kubernetes-1.7%2C%201.8%2C%201.9%2C%201.10%2C%201.11%2C%201.12%2C%201.13%2C%201.14-blue.svg
+    :target: https://github.com/kubernetes/kubernetes/releases
+
+Prerequisites
++++++++++++++
+
+Before you will begin, make sure that you already have:
+
+* Installed *Kubernetes* Cluster
+* Enabled *RBAC* authorization mode support
+
+Installation
+++++++++++++
+
+First, you should to create *Kubernetes secret* with *Coralogix* credentials:
+
+.. code-block:: bash
+
+    $ kubectl -n kube-system create secret generic filebeat-coralogix-account-secrets \
+        --from-literal=PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX \
+        --from-literal=COMPANY_ID=XXXX
+
+You should receive something like:
+
+::
+
+    secret "filebeat-coralogix-account-secrets" created
+
+Then you need to create ``filebeat-coralogix-logger`` resources on your *Kubernetes* cluster with this `manifests <https://github.com/coralogix/integrations-docs/tree/master/integrations/filebeat/kubernetes>`_:
+
+.. code-block:: bash
+
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-rbac.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-cm.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-secret.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-ds.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-svc.yaml
+
+Output:
+
+::
+
+    serviceaccount "filebeat-coralogix-service-account" created
+    clusterrole "filebeat-coralogix-service-account-role" created
+    clusterrolebinding "filebeat-coralogix-service-account" created
+    configmap "filebeat-coralogix-config" created
+    secret "filebeat-coralogix-certificate" created
+    daemonset "filebeat-coralogix-daemonset" created
+    service "filebeat-coralogix-service" created
+
+Now ``filebeat-coralogix-logger`` collects logs from your *Kubernetes* cluster.
+
+Uninstall
++++++++++
+
+If you want to remove ``filebeat-coralogix-logger`` from your cluster, execute this:
+
+.. code-block:: bash
+
+    $ kubectl -n kube-system delete secret filebeat-coralogix-account-secrets
+    $ kubectl -n kube-system delete secret filebeat-coralogix-certificate
+    $ kubectl -n kube-system delete svc,ds,cm,clusterrolebinding,clusterrole,sa \
+         -l k8s-app=filebeat-coralogix-logger

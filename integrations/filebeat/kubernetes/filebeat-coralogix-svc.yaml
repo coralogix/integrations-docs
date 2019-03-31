@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: filebeat-coralogix-service
+  namespace: kube-system
+  labels:
+    k8s-app: filebeat-coralogix-logger
+spec:
+  selector:
+    k8s-app: filebeat-coralogix-logger
+  clusterIP: None
+  ports:
+  - name: filebeat
+    port: 5066
+    targetPort: 5066
+    protocol: TCP
