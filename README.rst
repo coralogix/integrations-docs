@@ -62,3 +62,8 @@ Amazon Web Services
 * `AWS Kinesis(with Lambda) <integrations/aws/kinesis/lambda/README.rst>`_
 * `AWS Kinesis(with Logstash) <integrations/aws/kinesis/logstash/README.rst>`_
 * `AWS VPC <integrations/aws/vpc/README.rst>`_
+
+Google Cloud Platform
+~~~~~~~~~~~~~~~~~~~~~
+
+* `Google Cloud Storage <integrations/gcp/gcs/README.rst>`_
