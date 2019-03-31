@@ -180,7 +180,7 @@ To setup the function, execute this:
 Terraform
 ~~~~~~~~~
 
-`Here <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/gcp/gcs/lambda/coralogix.tf>`_ is the ``Terraform`` manifest to deploy ``Cloud Function``:
+`Here <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/gcp/gcs/terraform/coralogix.tf>`_ is the ``Terraform`` manifest to deploy ``Cloud Function``:
 
 .. code-block:: terraform
 
