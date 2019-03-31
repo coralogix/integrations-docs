@@ -188,6 +188,58 @@ Output:
 
 Now ``filebeat-coralogix-logger`` collects logs from your *Kubernetes* cluster.
 
+
+Here is the example of log record:
+
+.. code-block:: json
+
+   {
+     "cloud": {
+       "availability_zone": "projects/379343634745/zones/us-central1-a",
+       "instance_id": "7653580772456904060",
+       "instance_name": "gke-coralogix-test-default-pool-4d86c144-sbkd",
+       "machine_type": "projects/379343634745/machineTypes/n1-standard-1",
+       "project_id": "coralogix-test",
+       "provider": "gce"
+     },
+     "kubernetes": {
+       "container": {
+         "name": "prometheus-to-sd"
+       },
+       "labels": {
+         "k8s-app": "kube-dns",
+         "pod-template-hash": "989689126"
+       },
+       "namespace": "kube-system",
+       "node": {
+         "name": "gke-coralogix-test-default-pool-4d86c144-sbkd"
+       },
+       "pod": {
+         "name": "kube-dns-fdfbdf56b-jbbw2",
+         "uid": "56584469-534d-11e9-8bcd-42010a800179"
+       },
+       "replicaset": {
+         "name": "kube-dns-fdfbdf56b"
+       }
+     },
+     "@timestamp": "2019-03-31T00:45:53.973Z",
+     "@version": "1",
+     "host": {
+       "name": "filebeat-coralogix"
+     },
+     "beat": {
+       "hostname": "filebeat-coralogix-daemonset-98wxr",
+       "name": "filebeat-coralogix",
+       "version": "6.7.0"
+     },
+     "message": "E0331 00:45:53.970719 1 stackdriver.go:58] Error while sending request to Stackdriver Post /v3/projects/coralogix-test/timeSeries?alt=json: unsupported protocol scheme \"\"",
+     "tags": [
+       "kubernetes",
+       "containers",
+       "beats_input_codec_plain_applied"
+     ]
+   }
+
 Uninstall
 +++++++++
 
