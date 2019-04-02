@@ -30,5 +30,5 @@ output "app_name" {
 
 output "sub_name" {
   description = "Subsystem name"
-  type        = "${google_cloudfunctions_function.coralogix_function.environment_variables.sub_name}"
+  value       = "${google_cloudfunctions_function.coralogix_function.environment_variables.sub_name}"
 }
