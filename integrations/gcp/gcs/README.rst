@@ -180,69 +180,30 @@ To setup the function, execute this:
 Terraform
 ~~~~~~~~~
 
-`Here <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/gcp/gcs/terraform/coralogix.tf>`_ is the ``Terraform`` manifest to deploy ``Cloud Function``:
+`Here <https://github.com/coralogix/integrations-docs/tree/master/integrations/gcp/gcs/terraform>`_ is presented the ``Terraform`` module to deploy ``Cloud Function``.
+
+Add this module to your manifest and change its options:
 
 .. code-block:: terraform
-
-    variable "private_key" {
-      type        = "string"
-      description = "Coralogix Private Key."
-    }
-
-    variable "app_name" {
-      type        = "string"
-      description = "Application name."
-    }
-
-    variable "sub_name" {
-      type        = "string"
-      description = "Subsystem name."
-    }
-
-    variable "bucket_name" {
-      type        = "string"
-      description = "Name of storage bucket to watch."
-    }
 
     provider "google" {
       project     = "YOUR_GCP_PROJECT_ID"
       region      = "us-central1"
     }
 
-    resource "google_storage_bucket_object" "gcs_to_coralogix_function_sources" {
-      name   = "gcsToCoralogix.zip"
-      bucket = "${var.bucket_name}"
-      source = "./gcsToCoralogix.zip"
+    module "gcs_to_coralogix" {
+      source =  "git::https://github.com/coralogix/integrations-docs.git//integrations/gcp/gcs/terraform"
+      version = "1.0.0"
+      
+      private_key = "YOUR_PRIVATE_KEY"
+      app_name    = "APP_NAME"
+      sub_name    = "SUB_NAME"
+      bucket_name = "YOUR_BUCKET_NAME"
     }
 
-    resource "google_cloudfunctions_function" "gcs_to_coralogix_function" {
-      name                  = "${var.bucket_name}_to_coralogix"
-      description           = "Cloud Function which send logs from storage bucket to Coralogix."
-      runtime               = "python37"
-      available_memory_mb   = 1024
-      timeout               = 60
-      entry_point           = "to_coralogix"
-      source_archive_bucket = "${var.bucket_name}"
-      source_archive_object = "${google_storage_bucket_object.gcs_to_coralogix_function_sources.name}"
-      event_trigger {
-        resource            = "${var.bucket_name}"
-        event_type          = "google.storage.object.finalize"
-      }
-      environment_variables = {
-        private_key = "${var.private_key}"
-        app_name    = "${var.app_name}"
-        sub_name    = "${var.sub_name}"
-      }
-    }
-
-And apply this manifest:
+Download module and apply this changes:
 
 .. code-block:: bash
 
-    $ curl -sSL -o gcsToCoralogix.zip https://github.com/coralogix/integrations-docs/raw/master/integrations/gcp/gcs/lambda/gcsToCoralogix.zip
     $ terraform init
-    $ terraform apply -auto-approve \
-        -var 'private_key=YOUR_PRIVATE_KEY' \
-        -var 'app_name=APP_NAME' \
-        -var 'sub_name=SUB_NAME' \
-        -var 'bucket_name=coralogix-test'
+    $ terraform apply
