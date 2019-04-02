@@ -10,17 +10,17 @@ output "region" {
 
 output "bucket_name" {
   description = "Watched bucket"
-  value       = "${google_cloudfunctions_function.coralogix_function.event_trigger.resource}"
+  value       = "${google_cloudfunctions_function.coralogix_function.event_trigger.0.resource}"
 }
 
-output "function_sources_hash_md5" {
-  description = "MD5 hash of the function sources"
+output "local_hash" {
+  description = "MD5 hash of the local file"
+  value       = "${data.archive_file.function_archive.output_md5}"
+}
+
+output "remote_hash" {
+  description = "MD5 hash of the remote file"
   value       = "${base64decode(google_storage_bucket_object.function_archive.md5hash)}"
-}
-
-output "function_sources_hash_crc32" {
-  description = "CRC32 hash of the function sources"
-  value       = "${base64decode(google_storage_bucket_object.function_archive.crc32c)}"
 }
 
 output "app_name" {

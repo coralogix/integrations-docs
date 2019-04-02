@@ -1,12 +1,28 @@
-data "http" "function_sources" {
-  url = "https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/gcp/gcs/lambda/gcsToCoralogix.zip"
+data "http" "function_source" {
+  url = "https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/gcp/gcs/lambda/main.py"
+}
+
+data "http" "function_requirements" {
+  url = "https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/gcp/gcs/lambda/requirements.txt"
+}
+
+data "archive_file" "function_archive" {
+  type        = "zip"
+  output_path = "${path.module}/files/gcsToCoralogix.zip"
+  source {
+    content  = "${data.http.function_source.body}"
+    filename = "main.py"
+  }
+  source {
+    content  = "${data.http.function_requirements.body}"
+    filename = "requirements.txt"
+  }
 }
 
 resource "google_storage_bucket_object" "function_archive" {
   name         = "gcsToCoralogix.zip"
   bucket       = "${var.bucket_name}"
-  content      = "${data.http.function_sources.body}"
-  content_type = "application/zip"
+  source       = "${data.archive_file.function_archive.output_path}"
 }
 
 resource "google_cloudfunctions_function" "coralogix_function" {
