@@ -34,13 +34,13 @@ td-agent:
 
 .. code-block:: bash
 
-    $ td-agent-gem install fluent-plugin-coralogix_logger
+    $ td-agent-gem install fluent-plugin-coralogix
 
 Ruby:
 
 .. code-block:: bash
 
-    $ gem install fluent-plugin-coralogix_logger
+    $ gem install fluent-plugin-coralogix
 
 Configuration
 -------------
