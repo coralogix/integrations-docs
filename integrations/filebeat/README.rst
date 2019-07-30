@@ -109,6 +109,29 @@ Here is a basic example of **filebeat.yml**:
 
 **Note:** If you want to send all additional metadata, the **fields_under_root** option should be equals to *true*.
 
+If you have *multiline* logs like:
+
+.. code-block::
+
+    2019-08-31 14:27:33 [main] ERROR Main - Exception
+    javax.management.RuntimeErrorException: null
+        at Main.main(Main.java:16) ~[bin/:na]
+
+You can use multiline pattern:
+
+.. code-block:: yaml
+
+    filebeat.inputs:
+    - type: log
+      paths:
+      - "/var/log/your_app/your_app.log"
+      multiline:
+        pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['
+        negate: true
+        match: after
+
+Pattern should match the beginning of each record.
+
 Docker
 ~~~~~~
 
