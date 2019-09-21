@@ -69,7 +69,7 @@ Google Cloud Platform
 
 * `Google Cloud Storage <integrations/gcp/gcs/README.rst>`_
 
-Patterns
+Examples
 --------
 
 * `FluentD <examples/fluentd/README.rst>`_
