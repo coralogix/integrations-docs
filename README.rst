@@ -68,3 +68,9 @@ Google Cloud Platform
 ~~~~~~~~~~~~~~~~~~~~~
 
 * `Google Cloud Storage <integrations/gcp/gcs/README.rst>`_
+
+Patterns
+--------
+
+* `FluentD <examples/fluentd/README.rst>`_
+* `Logstash <examples/logstash/README.rst>`_

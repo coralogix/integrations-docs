@@ -1,0 +1,23 @@
+filebeat.inputs:
+- type: log
+  paths:
+  - "/var/log/nginx/access.log"
+  fields_under_root: true
+  fields:
+    APP_NAME: nginx
+    SUB_SYSTEM: access
+- type: log
+  paths:
+  - "/var/log/nginx/error.log"
+  multiline:
+    pattern: '^\d{4}\/\d{2}\/\d{2}'
+    negate: true
+    match: after
+  fields_under_root: true
+  fields:
+    APP_NAME: nginx
+    SUB_SYSTEM: error
+
+output.redis:
+  hosts: ["redis:6379"]
+  key: "filebeat"
