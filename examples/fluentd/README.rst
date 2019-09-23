@@ -113,6 +113,31 @@ Multiple files
       is_json false
     </match>
 
+JSON file
+~~~~~~~~~
+
+**/etc/td-agent/td-agent.conf:**
+
+.. code-block:: ruby
+
+    <source>
+      @type tail
+      path /var/log/application.log
+      pos_file /var/log/td-agent/application.log.pos
+      tag application
+      <parse>
+        @type json
+      </parse>
+    </source>
+
+    <match application.**>
+      @type coralogix
+      privatekey "#{ENV['PRIVATE_KEY']}"
+      appname "production"
+      subsystemname "application"
+      is_json true
+    </match>
+
 Starting
 --------
 
