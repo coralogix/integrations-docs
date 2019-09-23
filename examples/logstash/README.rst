@@ -84,10 +84,49 @@ Configuration for the ``Logstash`` pipeline is located at ``/etc/logstash/conf.d
 
 Configuration examples can be found `here <https://github.com/coralogix/integrations-docs/tree/master/examples/logstash/configs>`_.
 
+Single Logstash
+~~~~~~~~~~~~~~~
+
+.. image:: images/1.png
+   :alt: Logstash
+   :align: center
+
+**/etc/logstash/conf.d/logstash.conf:**
+
+.. code-block:: ruby
+
+    input {
+      file {
+        type => "access"
+        path => "/var/log/nginx/access.log"
+      }
+      file {
+        type => "error"
+        path => "/var/log/nginx/error.log"
+        codec => multiline {
+          pattern => "^\d{4}\/\d{2}\/\d{2}"
+          negate => true
+          what => previous
+        }
+      }
+    }
+
+    output {
+      coralogix {
+        config_params => {
+          "PRIVATE_KEY" => "${PRIVATE_KEY}"
+          "APP_NAME" => "nginx"
+          "SUB_SYSTEM" => "$type"
+        }
+        log_key_name => "message"
+        is_json => false
+      }
+    }
+
 Filebeat & Logstash
 ~~~~~~~~~~~~~~~~~~~
 
-.. image:: images/1.png
+.. image:: images/2.png
    :alt: Filebeat & Logstash
    :align: center
 
@@ -142,7 +181,7 @@ Filebeat & Logstash
 Filebeat & Kafka & Logstash
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: images/2.png
+.. image:: images/3.png
    :alt: Filebeat & Kafka & Logstash
    :align: center
 
@@ -200,7 +239,7 @@ Filebeat & Kafka & Logstash
 Filebeat & Redis & Logstash
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: images/3.png
+.. image:: images/4.png
    :alt: Filebeat & Redis & Logstash
    :align: center
 
