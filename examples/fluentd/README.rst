@@ -138,6 +138,39 @@ JSON file
       is_json true
     </match>
 
+Nested JSON field
+~~~~~~~~~~~~~~~~~
+
+**/etc/td-agent/td-agent.conf:**
+
+.. code-block:: ruby
+
+    <source>
+      @type tail
+      path /var/log/application.log
+      pos_file /var/log/td-agent/application.log.pos
+      tag application
+      <parse>
+        @type json
+      </parse>
+    </source>
+
+    <filter **>
+      @type record_transformer
+      enable_ruby
+      <record>
+        log ${JSON.parse(record["log"]) rescue record["log"]}
+      </record>
+    </filter>
+
+    <match application.**>
+      @type coralogix
+      privatekey "#{ENV['PRIVATE_KEY']}"
+      appname "production"
+      subsystemname "application"
+      is_json true
+    </match>
+
 Starting
 --------
 
