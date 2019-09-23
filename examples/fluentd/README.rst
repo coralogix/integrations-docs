@@ -35,14 +35,41 @@ Configuration
 
 Configuration for the ``FluentD`` is located at ``/etc/td-agent/td-agent.conf``.
 
-Configuration examples can be found `here <https://github.com/coralogix/integrations-docs/tree/master/examples/fluentd/configs/td-agent.conf>`_.
-
-Multiple files
-~~~~~~~~~~~~~~
+Configuration examples can be found `here <https://github.com/coralogix/integrations-docs/tree/master/examples/fluentd/configs>`_.
 
 .. image:: images/1.png
    :alt: FluentD
    :align: center
+
+
+Single file
+~~~~~~~~~~~
+
+**/etc/td-agent/td-agent.conf:**
+
+.. code-block:: ruby
+
+    <source>
+      @type tail
+      path /var/log/nginx/access.log
+      pos_file /var/log/td-agent/nginx-access.log.pos
+      tag access
+      <parse>
+        @type none
+      </parse>
+    </source>
+
+    <match access.**>
+      @type coralogix
+      privatekey "#{ENV['PRIVATE_KEY']}"
+      appname "nginx"
+      subsystemname "access"
+      log_key_name message
+      is_json false
+    </match>
+
+Multiple files
+~~~~~~~~~~~~~~
 
 **/etc/td-agent/td-agent.conf:**
 
