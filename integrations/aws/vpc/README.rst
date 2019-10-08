@@ -30,16 +30,16 @@ Setup
 .. image:: images/2.png
    :alt: Lambda code upload
 
-4. Add the mandatory environment variables: ``private_key``, ``app_name``, ``sub_name``:
-
-.. image:: images/3.png
-   :alt: Lambda environment variables
+4. Add the mandatory environment variables ``private_key``, ``app_name``, ``sub_name``:
 
 * **Private Key** – A unique ID which represents your company, this Id will be sent to your mail once you register to *Coralogix*.
 
 * **Application Name** – Used to separate your environment, e.g. *SuperApp-test/SuperApp-prod*.
 
 * **SubSystem Name** – Your application probably has multiple subsystems, for example, *Backend servers, Middleware, Frontend servers etc*.
+
+.. image:: images/3.png
+   :alt: Lambda environment variables
 
 5. Choose the S3 bucket you want to get triggered by and change the event type from ``“PUT”`` to ``“Object Created(All)”``:
 

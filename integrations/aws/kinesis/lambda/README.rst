@@ -30,7 +30,6 @@ Setup
 
     'use strict';
 
-    const AWS = require('aws-sdk');
     const https = require('https');
     const assert = require('assert');
 
@@ -38,20 +37,29 @@ Setup
     const appName = process.env.app_name ? process.env.app_name : 'NO_APPLICATION';
     const subName = process.env.sub_name ? process.env.sub_name : 'NO_SUBSYSTEM';
 
+    let newlinePattern = /(?:\r\n|\r|\n)/g;
+    if (process.env.newline_pattern)
+        newlinePattern = RegExp(process.env.newline_pattern);
+
     exports.handler = (event, context, callback) => {
 
-        function parseEvent(streamEventRecord) {
-            let streamEventData = new Buffer(streamEventRecord.kinesis.data, 'base64').toString('ascii');
-            return {
-                "timestamp": streamEventRecord.kinesis.approximateArrivalTimestamp * 1000,
-                "severity": getSeverityLevel(streamEventData),
-                "text": streamEventData
-            };
+        function extractEvent(streamEventRecord) {
+            return new Buffer(streamEventRecord.kinesis.data, 'base64').toString('ascii');
+        }
+
+        function parseEvents(eventsData) {
+            return eventsData.split(newlinePattern).map((eventRecord) => {
+                return {
+                    "timestamp": Date.now(),
+                    "severity": getSeverityLevel(eventRecord),
+                    "text": eventRecord
+                };
+            });
         }
 
         function postEventsToCoralogix(parsedEvents) {
             try {
-                var options = {
+                const options = {
                     hostname: 'api.coralogix.com',
                     port: 443,
                     path: '/api/v1/logs',
@@ -90,7 +98,7 @@ Setup
 
                     req.write(JSON.stringify(parsedEvents));
                     req.end();
-                }
+                };
 
                 sendRequest();
             } catch (ex) {
@@ -100,20 +108,20 @@ Setup
         }
 
         function getSeverityLevel(message) {
-            var severity = 3;
+            let severity = 3;
 
-            if(message.includes('debug'))
-                severity = 1
-            if(message.includes('verbose'))
-                severity = 2
-            if(message.includes('info'))
-                severity = 3
-            if(message.includes('warn') || message.includes('warning'))
-                severity = 4
-            if(message.includes('error'))
-                severity = 5
-            if(message.includes('critical') || message.includes('panic'))
-                severity = 6
+            if (message.includes('debug'))
+                severity = 1;
+            if (message.includes('verbose'))
+                severity = 2;
+            if (message.includes('info'))
+                severity = 3;
+            if (message.includes('warn') || message.includes('warning'))
+                severity = 4;
+            if (message.includes('error'))
+                severity = 5;
+            if (message.includes('critical') || message.includes('panic'))
+                severity = 6;
 
             return severity;
         }
@@ -122,11 +130,11 @@ Setup
             "privateKey": process.env.private_key,
             "applicationName": appName,
             "subsystemName": subName,
-            "logEntries": event.Records.map((eventRecord) => parseEvent(eventRecord))
+            "logEntries": parseEvents(event.Records.map(extractEvent).join('\n'))
         });
     };
 
-3. Add the mandatory environment variables:
+3. Add the mandatory environment variables ``private_key``, ``app_name``, ``sub_name``:
 
     * **Private Key** – A unique ID which represents your company, this Id will be sent to your mail once you register to *Coralogix*.
 
@@ -136,6 +144,13 @@ Setup
 
 .. image:: images/1.png
    :alt: Lambda environment variables
+
+**Note:** If you have a multiline messages you may need to pass ``newline_pattern`` environment variable with regular expression to split your logs records.
+
+.. image:: images/4.png
+   :alt: Lambda multiline pattern
+
+**Note:** If you have a multiline message you may need to pass ``newline_pattern`` environment variable with regular expression to split your logs records.
 
 4. Go to Add triggers and add ``Kinesis``:
 
@@ -149,7 +164,7 @@ Setup
 
 6. Increase ``Memory`` to ``1024MB`` and ``Timeout`` to ``1 min``.
 
-.. image:: images/4.png
+.. image:: images/5.png
    :alt: Lambda basic settings
 
 7. Click ``“Save”``.

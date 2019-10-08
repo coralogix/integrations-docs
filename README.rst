@@ -59,6 +59,7 @@ Servers
 Amazon Web Services
 ~~~~~~~~~~~~~~~~~~~
 
+* `AWS S3 <integrations/aws/s3/README.rst>`_
 * `AWS CloudTrail <integrations/aws/cloudtrail/README.rst>`_
 * `AWS Kinesis(with Lambda) <integrations/aws/kinesis/lambda/README.rst>`_
 * `AWS Kinesis(with Logstash) <integrations/aws/kinesis/logstash/README.rst>`_
