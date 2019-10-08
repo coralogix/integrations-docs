@@ -1,8 +1,3 @@
-variable "bucket" {
-  type        = "string"
-  description = "The name of the S3 bucket to watch"
-}
-
 variable "private_key" {
   type        = "string"
   description = "A private key which is used to validate your authenticity"
@@ -24,6 +19,11 @@ variable "newline_pattern" {
   default     = "/(?:\r\n|\r|\n)/g"
 }
 
+variable "bucket_name" {
+  type        = "string"
+  description = "The name of the S3 bucket to watch"
+}
+
 locals {
-  lambda_name = "S3-${var.bucket}-ToCoralogix"
+  lambda_name = "S3-${var.bucket_name}-ToCoralogix"
 }

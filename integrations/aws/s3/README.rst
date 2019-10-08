@@ -14,6 +14,9 @@ AWS S3 Logs
 Setup
 -----
 
+Manually
+~~~~~~~~
+
 1. Create an ``“author from scratch”`` Node.js 8.10 runtime lambda with an S3 read permissions:
 
 .. image:: images/1.png
@@ -21,7 +24,7 @@ Setup
 
 2. At ``“Code entry type”`` choose ``“Upload a ZIP file”`` and upload ``“s3ToCoralogix.zip”``:
 
-`<https://s3-eu-west-1.amazonaws.com/coralogix-public/tools/s3ToCoralogixzip>`_
+`<https://s3-eu-west-1.amazonaws.com/coralogix-public/tools/s3ToCoralogix.zip>`_
 
 .. image:: images/2.png
    :alt: Lambda code upload
@@ -53,3 +56,78 @@ Setup
    :alt: Lambda basic settings
 
 6. Click ``“Save”``.
+
+AWS CLI
+~~~~~~~
+
+To setup the function, execute this:
+
+.. code-block:: bash
+
+    $ curl -sSL -o s3ToCoralogix.zip https://s3-eu-west-1.amazonaws.com/coralogix-public/tools/s3ToCoralogix.zip
+    $ aws iam create-role \
+        --region eu-central-1 \
+        --role-name S3ReadOnly2 \
+        --path /service-role/ \
+        --assume-role-policy-document '{"Version":"2012-10-17","Statement":{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}}' \
+        --output text \
+        --query 'Role.Arn'
+    $ aws iam put-role-policy \
+        --region eu-central-1 \
+        --role-name S3ReadOnly2 \
+        --policy-name S3ReadOnlyPolicy \
+        --policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:GetObject"],"Resource":"arn:aws:s3:::*"}]}'
+    $ aws lambda create-function \
+        --region eu-central-1 \
+        --function-name s3ToCoralogix \
+        --runtime nodejs8.10 \
+        --memory-size 1024 \
+        --timeout 30 \
+        --handler index.handler \
+        --zip-file fileb://s3ToCoralogix.zip \
+        --environment 'Variables={private_key=YOUR_PRIVATE_KEY,app_name=APP_NAME,sub_name=SUB_NAME}' \
+        --role ROLE_ARN \
+        --publish \
+        --output text \
+        --query 'FunctionArn'
+    $ aws lambda add-permission \
+        --region eu-central-1 \
+        --function-name s3ToCoralogix \
+        --statement-id allow-s3-to-invoke \
+        --action lambda:InvokeFunction \
+        --principal s3.amazonaws.com \
+        --source-arn arn:aws:s3:::YOUR_BUCKET_NAME \
+        --source-account AWS_ACCOUNT_ID
+    $ aws s3api put-bucket-notification-configuration \
+        --region eu-central-1 \
+        --bucket YOUR_BUCKET_NAME \
+        --notification-configuration 'LambdaFunctionConfigurations=[{LambdaFunctionArn=FUNCTION_ARN,Events=[s3:ObjectCreated:*]}]'
+
+Terraform
+~~~~~~~~~
+
+`Here <https://github.com/coralogix/integrations-docs/tree/master/integrations/aws/s3/terraform>`_ is presented the ``Terraform`` module to deploy ``Lambda Function``.
+
+Add this module to your manifest and change its options:
+
+.. code-block:: terraform
+
+    provider "aws" {
+      region = "eu-central-1"
+    }
+
+    module "s3_to_coralogix" {
+      source =  "git::https://github.com/coralogix/integrations-docs.git//integrations/aws/s3/terraform"
+
+      private_key = "YOUR_PRIVATE_KEY"
+      app_name    = "APP_NAME"
+      sub_name    = "SUB_NAME"
+      bucket_name = "YOUR_BUCKET_NAME"
+    }
+
+Download module and apply this changes:
+
+.. code-block:: bash
+
+    $ terraform init
+    $ terraform apply
