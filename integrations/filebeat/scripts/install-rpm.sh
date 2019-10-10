@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILEBEAT_VERSION=${FILEBEAT_VERSION:-6.6.2}
+FILEBEAT_VERSION=${FILEBEAT_VERSION:-7.4.0}
 FILEBEAT_ARCH=$(uname -m)
 
 echo "Installing dependencies..."
@@ -19,7 +19,7 @@ chmod 600 /etc/filebeat/filebeat.yml
 echo "Downloading SSL certificate..."
 mkdir -p /etc/pki/ca-trust/coralogix
 curl -o /etc/pki/ca-trust/coralogix/ca.crt \
-     https://coralogixstorage.blob.core.windows.net/syslog-configs/certificate/ca.crt
+     https://coralogix-public.s3-eu-west-1.amazonaws.com/certificate/ca.crt
 
 echo "Starting Filebeat..."
 systemctl enable filebeat
