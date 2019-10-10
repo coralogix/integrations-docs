@@ -16,7 +16,7 @@ Prerequisites
 -------------
 
 * Have ``Auditbeat`` installed, for more information on how to install: `<https://www.elastic.co/guide/en/beats/auditbeat/current/auditbeat-installation.html>`_
-* Install our SSL certificate to your system for providing secure connection. You can download it by link: `<https://coralogixstorage.blob.core.windows.net/syslog-configs/certificate/ca.crt>`_
+* Install our SSL certificate to your system for providing secure connection. You can download it by link: `<https://coralogix-public.s3-eu-west-1.amazonaws.com/certificate/ca.crt>`_
 
 General
 -------
