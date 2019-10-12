@@ -7,7 +7,7 @@ AWS VPC Flow Logs
    :scale: 50 %
    :alt: AWS VPC Flow Logs
    :align: left
-   :target: https://aws.amazon.com/ru/vpc/
+   :target: https://aws.amazon.com/vpc/
 
 *Coralogix* provides a predefined Lambda function to forward your ``VPC Flow Logs`` straight to *Coralogix*.
 

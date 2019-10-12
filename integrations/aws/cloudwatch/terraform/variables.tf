@@ -17,7 +17,7 @@ variable "sub_name" {
 variable "newline_pattern" {
   type        = "string"
   description = "Pattern for lines splitting"
-  default     = "/(?:\r\n|\r|\n)/g"
+  default     = "(?:\\r\\n|\\r|\\n)"
 }
 
 variable "log_group" {
@@ -25,6 +25,12 @@ variable "log_group" {
   description = "The name of the CloudWatch log group to watch"
 }
 
+variable "filter_pattern" {
+  type        = "string"
+  description = "Filter pattern for CloudWatch subscription filter"
+  default     = ""
+}
+
 locals {
-  lambda_name = "CW-${var.log_group}-ToCoralogix"
+  lambda_name = "${var.app_name}-ToCoralogix"
 }

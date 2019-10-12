@@ -1,0 +1,232 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudWatch to Coralogix lambda allows you to send your logs from your CloudWatch log group to Coralogix.
+Parameters:
+  PrivateKey:
+    Type: String
+    Description: A private key which is used to validate your authenticity
+    AllowedPattern: '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}'
+    NoEcho: true
+  ApplicationName:
+    Type: String
+    Description: The name of your application
+  SubsystemName:
+    Type: String
+    Description: The subsystem name of your application
+    Default: ''
+  NewlinePattern:
+    Type: String
+    Description: The pattern for lines splitting
+    Default: '(?:\r\n|\r|\n)'
+  CloudWatchLogGroupName:
+    Type: String
+    Description: The name of the CloudWatch log group to watch
+    AllowedPattern: '[\.\-_/#A-Za-z0-9]+'
+    MinLength: 1
+    MaxLength: 512
+  CloudWatchFilterPattern:
+    Type: String
+    Description: Filter pattern for CloudWatch subscription filter
+    Default: ''
+Resources:
+  LambdaPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt
+        - LambdaFunction
+        - Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: logs.amazonaws.com
+      SourceArn: !Sub
+        - >-
+          arn:${Partition}:logs:${Region}:${AccountId}:log-group:${CloudWatchLogGroupName}:*
+        - Partition: !Ref 'AWS::Partition'
+          Region: !Ref 'AWS::Region'
+          AccountId: !Ref 'AWS::AccountId'
+    DependsOn:
+      - LambdaFunction
+      - LambdaRole
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Sub '${ApplicationName}-ToCoralogix'
+      Description: Ship logs to Coralogix from CloudWatch log group
+      Code:
+        ZipFile: |
+          'use strict';
+
+          const https = require('https');
+          const zlib = require('zlib');
+          const assert = require('assert');
+
+          assert(process.env.private_key, 'No private key');
+          const appName = process.env.app_name ? process.env.app_name : 'NO_APPLICATION';
+          const newlinePattern = (process.env.newline_pattern) ? RegExp(process.env.newline_pattern) : /(?:\r\n|\r|\n)/g;
+
+          exports.handler = (event, context, callback) => {
+              const payload = new Buffer(event.awslogs.data, 'base64');
+
+              function postEventsToCoralogix(parsedEvents) {
+                  try {
+                      let retries = 3;
+                      let timeoutMs = 10000;
+                      let retryNum = 0;
+                      let sendRequest = function sendRequest() {
+                          let req = https.request({
+                              hostname: 'api.coralogix.com',
+                              port: 443,
+                              path: '/api/v1/logs',
+                              method: 'POST',
+                              headers: {
+                                  'Content-Type': 'application/json',
+                              }
+                          }, function (res) {
+                              console.log('Status: ' + res.statusCode);
+                              console.log('Headers: ' + JSON.stringify(res.headers));
+                              res.setEncoding('utf8');
+                              res.on('data', function (body) {
+                                  console.log('Body: ' + body);
+                              });
+                          });
+                          req.setTimeout(timeoutMs, () => {
+                              req.abort();
+                              if (retryNum++ < retries) {
+                                  console.log('problem with request: timeout reached. retrying ' + retryNum + '/' + retries);
+                                  sendRequest();
+                              } else {
+                                  console.log('problem with request: timeout reached. failed all retries.');
+                              }
+                          });
+                          req.on('error', function (e) {
+                              console.log('problem with request: ' + e.message);
+                          });
+                          req.write(JSON.stringify(parsedEvents));
+                          req.end();
+                      };
+                      sendRequest();
+                  } catch (ex) {
+                      console.log(ex.message);
+                      callback(ex.message);
+                  }
+              }
+
+              function getSeverityLevel(message) {
+                  let severity = 3;
+                  if (message.includes('debug'))
+                      severity = 1;
+                  if (message.includes('verbose'))
+                      severity = 2;
+                  if (message.includes('info'))
+                      severity = 3;
+                  if (message.includes('warn') || message.includes('warning'))
+                      severity = 4;
+                  if (message.includes('error'))
+                      severity = 5;
+                  if (message.includes('critical') || message.includes('panic'))
+                      severity = 6;
+                  return severity;
+              }
+
+              zlib.gunzip(payload, (error, result) => {
+                  if (error) {
+                      callback(error);
+                  } else {
+                      const resultParsed = JSON.parse(result.toString('ascii'));
+                      const parsedEvents = resultParsed.logEvents.map(logEvent => logEvent.message).join("\r\n").split(newlinePattern);
+
+                      postEventsToCoralogix({
+                          "privateKey": process.env.private_key,
+                          "applicationName": appName,
+                          "subsystemName": process.env.sub_name ? process.env.sub_name : resultParsed.logGroup,
+                          "logEntries": parsedEvents.map((logEvent) => {
+                              return {
+                                  "timestamp": Date.now(),
+                                  "severity": getSeverityLevel(logEvent.toLowerCase()),
+                                  "text": logEvent,
+                                  "threadId": resultParsed.logStream
+                              };
+                          })
+                      });
+                  }
+              });
+          };
+      Role: !GetAtt
+        - LambdaRole
+        - Arn
+      Handler: index.handler
+      Runtime: nodejs8.10
+      MemorySize: 1024
+      Timeout: 30
+      Environment:
+        Variables:
+          private_key: !Ref PrivateKey
+          app_name: !Ref ApplicationName
+          sub_name: !Ref SubsystemName
+          newline_pattern: !Ref NewlinePattern
+    DependsOn:
+      - LambdaRole
+      - LambdaLogs
+  LambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub '${ApplicationName}-ToCoralogix-Role'
+      Path: /service-role/
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'sts:AssumeRole'
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyName: !Sub '${ApplicationName}-ToCoralogix-Role-Policy'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: !Sub >-
+                  arn:aws:logs:*:*:log-group:/aws/lambda/${ApplicationName}-ToCoralogix:*
+  LambdaLogs:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${ApplicationName}-ToCoralogix'
+      RetentionInDays: 14
+  CloudWatchLogGroupSubscriptionFilter:
+    Type: 'AWS::Logs::SubscriptionFilter'
+    Properties:
+      LogGroupName: !Ref CloudWatchLogGroupName
+      FilterPattern: !Ref CloudWatchFilterPattern
+      DestinationArn: !GetAtt
+        - LambdaFunction
+        - Arn
+    DependsOn:
+      - LambdaFunction
+      - LambdaPermissions
+Outputs:
+  LambdaName:
+    Description: Lambda name
+    Value: !Ref LambdaFunction
+  LambdaArn:
+    Description: Lambda ARN
+    Value: !GetAtt
+      - LambdaFunction
+      - Arn
+  LambdaRole:
+    Description: Lambda role
+    Value: !Ref LambdaRole
+  LambdaLogs:
+    Description: Lambda logs
+    Value: !Ref LambdaLogs
+  CloudWatchLogGroupName:
+    Description: Watched log group
+    Value: !Ref CloudWatchLogGroupName
+  ApplicationName:
+    Description: Application name
+    Value: !Ref ApplicationName
+  SubsystemName:
+    Description: Subsystem name
+    Value: !Ref SubsystemName

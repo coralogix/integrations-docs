@@ -7,7 +7,7 @@ AWS Kinesis with Lambda function
    :scale: 50 %
    :alt: AWS Kinesis
    :align: left
-   :target: https://aws.amazon.com/ru/kinesis/
+   :target: https://aws.amazon.com/kinesis/
 
 *Coralogix* provides a predefined Lambda function to forward your ``Kinesis`` stream straight to *Coralogix*.
 

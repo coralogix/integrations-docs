@@ -2,7 +2,7 @@ data "aws_s3_bucket" "selected_bucket" {
   bucket = var.bucket_name
 }
 
-data "aws_iam_policy_document" "lambda_assume_role_policy_document" {
+data "aws_iam_policy_document" "lambda_role_assume_policy_document" {
   version = "2012-10-17"
   statement {
     effect  = "Allow"
@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "lambda_role_policy_document" {
     effect    = "Allow"
     actions   = [
       "logs:CreateLogStream",
-      "logs:PutLogEvents",
+      "logs:PutLogEvents"
     ]
     resources = ["arn:aws:logs:*:*:log-group:/aws/lambda/${local.lambda_name}:*"]
   }
@@ -37,13 +37,13 @@ resource "aws_cloudwatch_log_group" "lambda_log_group" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name               = "${local.lambda_name}-ReadOnly"
+  name               = "${local.lambda_name}-Role"
   path               = "/service-role/"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy_document.json
+  assume_role_policy = data.aws_iam_policy_document.lambda_role_assume_policy_document.json
 }
 
 resource "aws_iam_role_policy" "lambda_role_policy" {
-  name       = "${local.lambda_name}-S3-ReadOnly-Policy"
+  name       = "${local.lambda_name}-Role-Policy"
   role       = aws_iam_role.lambda_role.id
   policy     = data.aws_iam_policy_document.lambda_role_policy_document.json
   depends_on = [aws_iam_role.lambda_role]
@@ -52,13 +52,13 @@ resource "aws_iam_role_policy" "lambda_role_policy" {
 resource "aws_lambda_function" "lambda_function" {
   function_name    = local.lambda_name
   description      = "Ship logs to Coralogix from S3 ${data.aws_s3_bucket.selected_bucket.bucket} bucket"
-  s3_bucket        = "coralogix-public"
-  s3_key           = "tools/s3ToCoralogix.zip"
+  s3_bucket        = var.lambda_source_bucket
+  s3_key           = var.lambda_source_object
   role             = aws_iam_role.lambda_role.arn
   handler          = "index.handler"
   runtime          = "nodejs8.10"
-  memory_size      = "1024"
-  timeout          = "30"
+  memory_size      = 1024
+  timeout          = 30
   publish          = true
   environment {
     variables = {
@@ -92,6 +92,8 @@ resource "aws_s3_bucket_notification" "bucket_trigger" {
   lambda_function {
     lambda_function_arn = aws_lambda_function.lambda_function.arn
     events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = var.filter_prefix
+    filter_suffix       = var.filter_suffix
   }
   depends_on = [
     aws_lambda_function.lambda_function,

@@ -15,7 +15,7 @@ data "archive_file" "function_archive" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_assume_role_policy_document" {
+data "aws_iam_policy_document" "lambda_role_assume_policy_document" {
   version = "2012-10-17"
   statement {
     effect  = "Allow"
@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "lambda_role_policy_document" {
     effect    = "Allow"
     actions   = [
       "logs:CreateLogStream",
-      "logs:PutLogEvents",
+      "logs:PutLogEvents"
     ]
     resources = ["arn:aws:logs:*:*:log-group:/aws/lambda/${local.lambda_name}:*"]
   }
@@ -47,11 +47,11 @@ resource "aws_cloudwatch_log_group" "lambda_log_group" {
 resource "aws_iam_role" "lambda_role" {
   name               = "${local.lambda_name}-Role"
   path               = "/service-role/"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy_document.json
+  assume_role_policy = data.aws_iam_policy_document.lambda_role_assume_policy_document.json
 }
 
 resource "aws_iam_role_policy" "lambda_role_policy" {
-  name       = "${local.lambda_name}-CW-Policy"
+  name       = "${local.lambda_name}-Role-Policy"
   role       = aws_iam_role.lambda_role.id
   policy     = data.aws_iam_policy_document.lambda_role_policy_document.json
   depends_on = [aws_iam_role.lambda_role]
@@ -65,8 +65,8 @@ resource "aws_lambda_function" "lambda_function" {
   role             = aws_iam_role.lambda_role.arn
   handler          = "index.handler"
   runtime          = "nodejs8.10"
-  memory_size      = "1024"
-  timeout          = "30"
+  memory_size      = 1024
+  timeout          = 30
   publish          = true
   environment {
     variables = {
@@ -87,7 +87,7 @@ resource "aws_lambda_permission" "lambda_function_permissions" {
   function_name = aws_lambda_function.lambda_function.function_name
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  principal     = "events.amazonaws.com"
+  principal     = "logs.amazonaws.com"
   source_arn    = data.aws_cloudwatch_log_group.selected_log_group.arn
   depends_on    = [
     aws_iam_role.lambda_role,
@@ -97,8 +97,8 @@ resource "aws_lambda_permission" "lambda_function_permissions" {
 
 resource "aws_cloudwatch_log_subscription_filter" "log_group_trigger" {
   name            = local.lambda_name
-  log_group_name  = aws_cloudwatch_log_group.lambda_log_group.name
-  filter_pattern  = ""
+  log_group_name  = data.aws_cloudwatch_log_group.selected_log_group.name
+  filter_pattern  = var.filter_pattern
   destination_arn = aws_lambda_function.lambda_function.arn
   depends_on = [
     aws_lambda_function.lambda_function,

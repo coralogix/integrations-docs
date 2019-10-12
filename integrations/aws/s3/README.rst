@@ -1,13 +1,13 @@
 AWS S3 Logs
 ===========
 
-.. image:: images/s3.png
+.. image:: images/amazon-s3.png
    :height: 50px
    :width: 100px
    :scale: 50 %
    :alt: AWS S3 Logs
    :align: left
-   :target: https://aws.amazon.com/ru/s3/
+   :target: https://aws.amazon.com/s3/
 
 *Coralogix* provides a predefined Lambda function to forward your ``S3`` logs straight to *Coralogix*.
 
@@ -113,7 +113,7 @@ Add this module to your manifest and change its options:
 .. code-block:: terraform
 
     provider "aws" {
-      region = "eu-central-1"
+      region = "eu-west-1"
     }
 
     module "s3_to_coralogix" {
@@ -131,3 +131,36 @@ Download module and apply this changes:
 
     $ terraform init
     $ terraform apply
+
+CloudFormation
+~~~~~~~~~~~~~~
+
+`Here <https://github.com/coralogix/integrations-docs/blob/master/integrations/aws/s3/cloudformation/template.yaml>`_ is presented the ``CloudFormation`` template to deploy ``Lambda Function``.
+
+.. image:: images/7.png
+   :alt: CloudFormation template
+
+To setup the function, execute this:
+
+.. code-block:: bash
+
+    $ curl -sSL -o s3ToCoralogix.yaml https://raw.githubusercontent.com/coralogix/integrations-docs/module/integrations/aws/s3/cloudformation/template.yaml
+    $ aws cloudformation deploy \
+        --region eu-west-1 \
+        --template-file ./s3ToCoralogix.yaml \
+        --stack-name S3ToCoralogix \
+        --capabilities CAPABILITY_NAMED_IAM \
+        --parameter-overrides \
+            PrivateKey=YOUR_PRIVATE_KEY \
+            ApplicationName=APP_NAME \
+            SubsystemName=SUB_NAME \
+            S3BucketName=YOUR_BUCKET_NAME
+    $ aws cloudformation describe-stacks \
+        --region eu-west-1 \
+        --stack-name S3ToCoralogix \
+        --output text \
+        --query "Stacks[0].Outputs[?OutputKey=='LambdaArn'].OutputValue"
+    $ aws s3api put-bucket-notification-configuration \
+        --region eu-west-1 \
+        --bucket YOUR_BUCKET_NAME \
+        --notification-configuration 'LambdaFunctionConfigurations=[{LambdaFunctionArn=FUNCTION_ARN,Events=[s3:ObjectCreated:*]}]'

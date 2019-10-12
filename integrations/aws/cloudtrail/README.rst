@@ -7,7 +7,7 @@ AWS CloudTrail
    :scale: 50 %
    :alt: AWS CloudTrail
    :align: left
-   :target: https://aws.amazon.com/ru/vpc/
+   :target: https://aws.amazon.com/cloudtrail/
 
 *Coralogix* provides a predefined Lambda function to forward your ``CloudTrail`` logs straight to *Coralogix*.
 
