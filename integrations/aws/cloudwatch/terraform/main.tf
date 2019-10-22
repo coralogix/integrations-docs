@@ -64,7 +64,7 @@ resource "aws_lambda_function" "lambda_function" {
   source_code_hash = data.archive_file.function_archive.output_base64sha256
   role             = aws_iam_role.lambda_role.arn
   handler          = "index.handler"
-  runtime          = "nodejs8.10"
+  runtime          = "nodejs10.x"
   memory_size      = 1024
   timeout          = 30
   publish          = true

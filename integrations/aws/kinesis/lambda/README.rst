@@ -14,15 +14,10 @@ AWS Kinesis with Lambda function
 Setup
 -----
 
-1. Create an ``“author from scratch”`` Node.js 8.10 runtime lambda with the following permissions(`Create execution role tutorial <https://docs.aws.amazon.com/en_us/lambda/latest/dg/lambda-intro-execution-role.html>`_):
+1. Create an ``“author from scratch”`` Node.js 10.x runtime lambda with basic permissions:
 
-    * `kinesis:DescribeStream <https://docs.aws.amazon.com/kinesis/latest/APIReference/API_DescribeStream.html>`_
-    * `kinesis:DescribeStreamSummary <https://docs.aws.amazon.com/kinesis/latest/APIReference/API_DescribeStreamSummary.html>`_
-    * `kinesis:GetRecords <https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetRecords.html>`_
-    * `kinesis:GetShardIterator <https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html>`_
-    * `kinesis:ListShards <https://docs.aws.amazon.com/kinesis/latest/APIReference/API_ListShards.html>`_
-    * `kinesis:ListStreams <https://docs.aws.amazon.com/kinesis/latest/APIReference/API_ListStreams.html>`_
-    * `kinesis:SubscribeToShard <https://docs.aws.amazon.com/kinesis/latest/APIReference/API_SubscribeToShard.html>`_
+.. image:: images/6.png
+   :alt: Lambda environment variables
 
 2. At ``“Code entry type”`` choose ``“Edit code inline”`` and paste the `following function <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/aws/kinesis/lambda/kinesis.js>`_:
 

@@ -30,17 +30,21 @@ You must provide the following four variables when creating a *Coralogix* logger
 Installation
 ------------
 
-td-agent:
+**td-agent:**
 
 .. code-block:: bash
 
     $ td-agent-gem install fluent-plugin-coralogix
 
-Ruby:
+**Ruby:**
 
 .. code-block:: bash
 
     $ gem install fluent-plugin-coralogix
+
+Also, we provide some scenarios for configuration management systems:
+
+* `SaltStack <https://github.com/coralogix/integrations-docs/blob/master/integrations/fluentd/cms/salt/fluentd.sls>`_
 
 Configuration
 -------------
