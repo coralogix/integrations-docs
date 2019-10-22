@@ -1,0 +1,73 @@
+---
+- hosts: all
+  remote_user: root
+  become: yes
+  tasks:
+  - name: Install required packages
+    package:
+      name: gnupg2
+      state: present
+  - name: Setup FluentD repository for DEB
+    block:
+    - name: Import repository key
+      apt_key:
+        url: https://packages.treasuredata.com/GPG-KEY-td-agent
+        validate_certs: no
+        state: present
+    - name: Create repository file for Ubuntu/Debian
+      apt_repository:
+        repo: deb http://packages.treasuredata.com/3/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}/ {{ ansible_distribution_release }} contrib
+        filename: treasure-data
+        update_cache: yes
+        state: present
+    when: ansible_os_family == "Debian" 
+  - name: Setup FluentD repository for RPM
+    block:
+    - name: Import repository key
+      rpm_key:
+        key: https://packages.treasuredata.com/GPG-KEY-td-agent
+        validate_certs: no
+        state: present
+    - name: Create repository file for RedHat/CentOS
+      yum_repository:
+        name: treasuredata
+        description: TreasureData
+        baseurl: http://packages.treasuredata.com/3/redhat/$releasever/$basearch
+        gpgkey: https://packages.treasuredata.com/GPG-KEY-td-agent
+        gpgcheck: yes
+        state: present
+      when: (ansible_distribution == "RedHat") or
+            (ansible_distribution == "CentOS")
+    - name: Create repository file for Amazon Linux 2
+      yum_repository:
+        name: treasuredata
+        description: TreasureData
+        baseurl: http://packages.treasuredata.com/3/amazon/2/$releasever/$basearch
+        gpgkey: https://packages.treasuredata.com/GPG-KEY-td-agent
+        gpgcheck: yes
+        state: present
+      when: ansible_distribution == "Amazon"
+    when: ansible_os_family == "RedHat"
+  - name: Install FluentD
+    package:
+      name: td-agent
+      state: present
+    ignore_errors: "{{ ansible_check_mode }}"
+  - name: Configure FluentD
+    copy:
+      src: td-agent.conf
+      dest: /etc/td-agent/td-agent.conf
+      mode: '0644'
+    notify:
+    - Restart FluentD
+  - name: Start FluentD
+    service:
+      name: td-agent
+      enabled: yes
+      state: started
+  handlers:
+    - name: Restart FluentD
+      service:
+        name: td-agent
+        state: restarted
+

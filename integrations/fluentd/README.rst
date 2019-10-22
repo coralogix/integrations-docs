@@ -45,6 +45,7 @@ Installation
 Also, we provide some scenarios for configuration management systems:
 
 * `SaltStack <https://github.com/coralogix/integrations-docs/blob/master/integrations/fluentd/cms/salt/fluentd.sls>`_
+* `Ansible <https://github.com/coralogix/integrations-docs/blob/master/integrations/fluentd/cms/ansible/fluentd.yml>`_
 
 Configuration
 -------------
