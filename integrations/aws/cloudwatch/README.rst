@@ -17,7 +17,10 @@ Setup
 Manually
 ~~~~~~~~
 
-1. Create an ``“author from scratch”`` Node.js 8.10 runtime lambda:
+1. Create an ``“author from scratch”`` Node.js 10.x runtime lambda with basic permissions:
+
+.. image:: images/7.png
+   :alt: Lambda settings
 
 2. At ``“Code entry type”`` choose ``“Edit code inline”`` and paste the `function code <https://github.com/coralogix/integrations-docs/blob/master/integrations/aws/cloudwatch/lambda/cw.js>`_.
 

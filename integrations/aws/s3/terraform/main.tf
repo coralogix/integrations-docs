@@ -56,7 +56,7 @@ resource "aws_lambda_function" "lambda_function" {
   s3_key           = var.lambda_source_object
   role             = aws_iam_role.lambda_role.arn
   handler          = "index.handler"
-  runtime          = "nodejs8.10"
+  runtime          = "nodejs10.x"
   memory_size      = 1024
   timeout          = 30
   publish          = true

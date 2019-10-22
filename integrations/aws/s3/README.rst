@@ -17,7 +17,7 @@ Setup
 Manually
 ~~~~~~~~
 
-1. Create an ``“author from scratch”`` Node.js 8.10 runtime lambda with an S3 read permissions:
+1. Create an ``“author from scratch”`` Node.js 10.x runtime lambda with an S3 read permissions:
 
 .. image:: images/1.png
    :alt: Lambda settings
