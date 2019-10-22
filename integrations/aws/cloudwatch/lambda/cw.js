@@ -1,27 +1,15 @@
 'use strict';
 
 const https = require('https');
+const zlib = require('zlib');
 const assert = require('assert');
 
-assert(process.env.private_key, 'No private key')
+assert(process.env.private_key, 'No private key');
 const appName = process.env.app_name ? process.env.app_name : 'NO_APPLICATION';
-const subName = process.env.sub_name ? process.env.sub_name : 'NO_SUBSYSTEM';
 const newlinePattern = (process.env.newline_pattern) ? RegExp(process.env.newline_pattern) : /(?:\r\n|\r|\n)/g;
 
 exports.handler = (event, context, callback) => {
-    function extractEvent(streamEventRecord) {
-        return new Buffer(streamEventRecord.kinesis.data, 'base64').toString('ascii');
-    }
-
-    function parseEvents(eventsData) {
-        return eventsData.split(newlinePattern).map((eventRecord) => {
-            return {
-                "timestamp": Date.now(),
-                "severity": getSeverityLevel(eventRecord),
-                "text": eventRecord
-            };
-        });
-    }
+    const payload = new Buffer(event.awslogs.data, 'base64');
 
     function postEventsToCoralogix(parsedEvents) {
         try {
@@ -84,10 +72,26 @@ exports.handler = (event, context, callback) => {
         return severity;
     }
 
-    postEventsToCoralogix({
-        "privateKey": process.env.private_key,
-        "applicationName": appName,
-        "subsystemName": subName,
-        "logEntries": parseEvents(event.Records.map(extractEvent).join('\n'))
+    zlib.gunzip(payload, (error, result) => {
+        if (error) {
+            callback(error);
+        } else {
+            const resultParsed = JSON.parse(result.toString('ascii'));
+            const parsedEvents = resultParsed.logEvents.map(logEvent => logEvent.message).join("\r\n").split(newlinePattern);
+
+            postEventsToCoralogix({
+                "privateKey": process.env.private_key,
+                "applicationName": appName,
+                "subsystemName": process.env.sub_name ? process.env.sub_name : resultParsed.logGroup,
+                "logEntries": parsedEvents.map((logEvent) => {
+                    return {
+                        "timestamp": Date.now(),
+                        "severity": getSeverityLevel(logEvent.toLowerCase()),
+                        "text": logEvent,
+                        "threadId": resultParsed.logStream
+                    };
+                })
+            });
+        }
     });
 };

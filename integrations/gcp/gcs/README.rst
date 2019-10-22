@@ -193,8 +193,7 @@ Add this module to your manifest and change its options:
 
     module "gcs_to_coralogix" {
       source =  "git::https://github.com/coralogix/integrations-docs.git//integrations/gcp/gcs/terraform"
-      version = "1.0.0"
-      
+
       private_key = "YOUR_PRIVATE_KEY"
       app_name    = "APP_NAME"
       sub_name    = "SUB_NAME"

@@ -1,0 +1,136 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: S3 to Coralogix lambda allows you to send your logs from your S3 bucket to Coralogix.
+Parameters:
+  PrivateKey:
+    Type: String
+    Description: A private key which is used to validate your authenticity
+    AllowedPattern: '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}'
+    NoEcho: true
+  ApplicationName:
+    Type: String
+    Description: The name of your application
+  SubsystemName:
+    Type: String
+    Description: The subsystem name of your application
+  NewlinePattern:
+    Type: String
+    Description: The pattern for lines splitting
+    Default: '(?:\r\n|\r|\n)'
+  S3BucketName:
+    Type: String
+    Description: The name of the S3 bucket to watch
+    AllowedPattern: '^[0-9A-Za-z\.\-_]*(?<!\.)$'
+    MinLength: 3
+    MaxLength: 63
+  LambdaSourceBucket:
+    Type: String
+    Description: S3 bucket with lambda function source code
+    AllowedPattern: '^[0-9A-Za-z\.\-_]*(?<!\.)$'
+    MinLength: 3
+    MaxLength: 63
+    Default: coralogix-public
+  LambdaSourceObject:
+    Type: String
+    Description: S3 bucket object with lambda function source code
+    MinLength: 1
+    MaxLength: 1024
+    Default: tools/s3ToCoralogix.zip
+Resources:
+  LambdaPermissions:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt
+        - LambdaFunction
+        - Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+      SourceArn: !Sub
+        - >-
+          arn:${Partition}:s3:::${S3BucketName}
+        - Partition: !Ref 'AWS::Partition'
+    DependsOn:
+      - LambdaFunction
+      - LambdaRole
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Sub 'S3-${S3BucketName}-ToCoralogix'
+      Description: !Sub 'Ship logs to Coralogix from S3 ${S3BucketName} bucket'
+      Code:
+        S3Bucket: !Ref LambdaSourceBucket
+        S3Key: !Ref LambdaSourceObject
+      Role: !GetAtt
+        - LambdaRole
+        - Arn
+      Handler: index.handler
+      Runtime: nodejs8.10
+      MemorySize: 1024
+      Timeout: 30
+      Environment:
+        Variables:
+          private_key: !Ref PrivateKey
+          app_name: !Ref ApplicationName
+          sub_name: !Ref SubsystemName
+          newline_pattern: !Ref NewlinePattern
+    DependsOn:
+      - LambdaRole
+      - LambdaLogs
+  LambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub 'S3-${S3BucketName}-ToCoralogix-Role'
+      Path: /service-role/
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'sts:AssumeRole'
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyName: !Sub 'S3-${S3BucketName}-ToCoralogix-Role-Policy'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                Resource: !Sub 'arn:aws:s3:::${S3BucketName}/*'
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: !Sub >-
+                  arn:aws:logs:*:*:log-group:/aws/lambda/S3-${S3BucketName}-ToCoralogix:*
+  LambdaLogs:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/S3-${S3BucketName}-ToCoralogix'
+      RetentionInDays: 14
+Outputs:
+  LambdaName:
+    Description: Lambda name
+    Value: !Ref LambdaFunction
+  LambdaArn:
+    Description: Lambda ARN
+    Value: !GetAtt
+      - LambdaFunction
+      - Arn
+  LambdaRole:
+    Description: Lambda role
+    Value: !Ref LambdaRole
+  LambdaLogs:
+    Description: Lambda logs
+    Value: !Ref LambdaLogs
+  S3BucketName:
+    Description: Watched bucket
+    Value: !Ref S3BucketName
+  ApplicationName:
+    Description: Application name
+    Value: !Ref ApplicationName
+  SubsystemName:
+    Description: Subsystem name
+    Value: !Ref SubsystemName
