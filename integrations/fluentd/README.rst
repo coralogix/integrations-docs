@@ -49,6 +49,9 @@ Also, we provide some scenarios for configuration management systems:
 Configuration
 -------------
 
+Common
+~~~~~~
+
 Open your ``Fluentd`` configuration file and add *Coralogix* output.
 If you installed ``Fluentd`` using the ``td-agent`` packages, the config file is located at `/etc/td-agent/td-agent.conf`.
 If you installed ``Fluentd`` using the ``Ruby Gem``, the config file is located at `/etc/fluent/fluent.conf`.
@@ -64,6 +67,9 @@ If you installed ``Fluentd`` using the ``Ruby Gem``, the config file is located 
     </match>
 
 The first four keys (``type``, ``privatekey``, ``appname``, ``subsystemname``) are **mandatory** while the last one is *optional*.
+
+Application and subsystem name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In case your input stream is a ``JSON`` object, you can extract **APP_NAME** and/or **SUB_SYSTEM** from the ``JSON`` using the ``$`` sign. For instance, in the bellow ``JSON`` ``$kubernetes.pod_name`` will extract *“my name”* value.
 
@@ -89,6 +95,9 @@ In case your input stream is a ``JSON`` object, you can extract **APP_NAME** and
         "type": "k8s",
     }
 
+Record content
+~~~~~~~~~~~~~~
+
 In case your input stream is a ``JSON`` object and you don’t want to send the entire ``JSON``, rather just a portion of it, you can write the value of the key you want to send in the **log_key_name**.
 For instance, in the above example, if you write:
 
@@ -99,6 +108,9 @@ For instance, in the above example, if you write:
 then only the value of ``kubernetes`` key will be sent.
 If you do want to send the entire message then you can just delete this key.
 
+Timestamp
+~~~~~~~~~
+
 If you want to use some field as ``timestamp`` in Coralogix, you can use **timestamp_key_name** option:
 
 .. code-block:: ruby
@@ -107,4 +119,35 @@ If you want to use some field as ``timestamp`` in Coralogix, you can use **times
 
 then you will see that logs records have timestamp from this field.
 
-Restart ``FluentD``.
+**Note:** We accepts only logs which are not older than `24 hours`.
+
+JSON support
+~~~~~~~~~~~~
+
+In case your raw log message is a JSON object you should set `is_json` key to a **true** value, otherwise you can ignore it.
+
+.. code-block:: ruby
+
+    is_json true
+
+Proxy support
+~~~~~~~~~~~~~
+
+This plugin supports sending data via proxy. Here is the example of the configuration:
+
+.. code-block:: ruby
+
+    <match **>
+      @type coralogix
+      privatekey "#{ENV['PRIVATE_KEY']}"
+      appname "prod"
+      subsystemname "fluentd"
+      is_json true
+      <proxy>
+        host "PROXY_ADDRESS"
+        port PROXY_PORT
+        # user and password are optionals parameters
+        user "PROXY_USER"
+        password "PROXY_PASSWORD"
+      </proxy>
+    </match>
