@@ -53,6 +53,8 @@
       name: td-agent
       state: present
     ignore_errors: "{{ ansible_check_mode }}"
+  - name: Install FluentD plugin
+    command: td-agent-gem install fluent-plugin-coralogix
   - name: Configure FluentD
     copy:
       src: td-agent.conf
