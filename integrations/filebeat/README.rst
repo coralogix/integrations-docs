@@ -139,7 +139,7 @@ Build Docker image with your **filebeat.yml**:
 
 .. code-block:: dockerfile
 
-    FROM docker.elastic.co/beats/filebeat:6.6.2
+    FROM docker.elastic.co/beats/filebeat:7.4.2
 
     LABEL description="Filebeat logs watcher"
 
