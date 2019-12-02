@@ -46,12 +46,20 @@ Install FluentD:
     - require:
       - pkgrepo: Setup FluentD repository
 
+Install FluentD plugin:
+  cmd.run:
+    - name: td-agent-gem install fluent-plugin-coralogix
+    - unless: td-agent-gem list --no-versions | grep -q fluent-plugin-coralogix
+    - require:
+      - pkg: Install FluentD
+
 Configure FluentD:
   file.managed:
     - name: /etc/td-agent/td-agent.conf
     - source: salt://fluentd/td-agent.conf
     - require:
       - pkg: Install FluentD
+      - cmd: Install FluentD plugin
 
 Start FluentD:
   service.running:
