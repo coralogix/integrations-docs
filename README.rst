@@ -29,7 +29,7 @@ Containers
 
 * `Kubernetes(with Filebeat) <integrations/filebeat/README.rst#kubernetes>`_
 * `Kubernetes(with FluentD) <https://github.com/coralogix/fluentd-coralogix-image/blob/master/examples/kubernetes/README.rst>`_
-* `Docker GELF <https://github.com/coralogix/docker-gelf-example/blob/master/README.rst>`_
+* `Docker(with GELF) <https://github.com/coralogix/docker-gelf-example/blob/master/README.rst>`_
 
 Logs/Metrics collectors
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,6 +51,12 @@ SDK's
 * `Python <https://python-coralogix-sdk.readthedocs.io/en/latest/>`_
 * `PHP <https://php-coralogix-sdk.readthedocs.io/en/latest/>`_
 
+CI/CD systems
+~~~~~~~~~~~~~
+
+* `Jenkins <https://github.com/coralogix/jenkins-coralogix-plugin>`_
+* `CircleCI <https://github.com/coralogix-circleci/coralogix-orb>`_
+
 Servers
 ~~~~~~~
 
@@ -70,6 +76,12 @@ Google Cloud Platform
 ~~~~~~~~~~~~~~~~~~~~~
 
 * `Google Cloud Storage <integrations/gcp/gcs/README.rst>`_
+
+
+Other services
+~~~~~~~~~~~~~~
+
+* `Okta <integrations/okta/README.rst>`_
 
 Examples
 --------
