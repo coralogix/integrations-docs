@@ -75,4 +75,4 @@ If you want to send just log message without additional metadata:
 * ``log_key_name`` - ``log``
 * ``is_json`` - ``false``
 
-**Note:** to manage multiline messages refer to `this <https://github.com/aws-samples/amazon-ecs-firelens-examples/tree/master/examples/fluentd/multiline-logs>`_ page.
+**Note:** To manage multiline messages refer to `this <https://github.com/aws-samples/amazon-ecs-firelens-examples/tree/master/examples/fluentd/multiline-logs>`_ page.
