@@ -57,7 +57,7 @@ Fargate
 * ``Type`` - ``fluentd``
 * ``Image`` - ``docker.io/coralogixrepo/fluentd-coralogix-ecs:latest``
 
-2. Configure logging driver for the container which you want to send the logs:
+2. Configure ``awsfirelens`` logging driver for the container which you want to send the logs:
 
 .. image:: images/logging_settings.png
    :alt: Logging driver settings
