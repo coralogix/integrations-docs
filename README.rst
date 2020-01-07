@@ -83,6 +83,7 @@ Other services
 ~~~~~~~~~~~~~~
 
 * `Okta <integrations/okta/README.rst>`_
+* `Heroku <https://github.com/coralogix/heroku-fluentd-coralogix>`_
 
 Examples
 --------
