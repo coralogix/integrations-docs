@@ -33,22 +33,15 @@ You must provide the following four variables when creating a *Coralogix* logger
 Installation
 ------------
 
-Fluent-Bit 0.11.x
-~~~~~~~~~~~~~~~~~
-
 .. code-block:: bash
 
-    $ wget -o /fluent-bit/plugins/out_coralogix.so https://github.com/coralogix/integrations-docs/blob/master/integrations/fluent-bit/0.11/out_coralogix.so
-
-Fluent-Bit 0.12.x, 1.x
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    $ wget -o /fluent-bit/plugins/out_coralogix.so https://github.com/coralogix/integrations-docs/blob/master/integrations/fluent-bit/0.12/out_coralogix.so
+    $ wget -o /fluent-bit/plugins/out_coralogix.so https://github.com/coralogix/integrations-docs/blob/master/integrations/fluent-bit/plugin/out_coralogix.so
 
 Configuration
 -------------
+
+Common
+~~~~~~
 
 Open your ``Fluent-Bit`` configuration file and add *Coralogix* output:
 
@@ -59,14 +52,74 @@ Open your ``Fluent-Bit`` configuration file and add *Coralogix* output:
         Tag memory
 
     [OUTPUT]
-        Name coralogix
-        private_key YOUR_PRIVATE_KEY
-        company_id YOUR_COMPANY_ID
-        app_name APP_NAME
-        sub_name SUB_NAME
-        Match *
+        Name        coralogix
+        Match       *
+        Private_Key YOUR_PRIVATE_KEY
+        Company_Id  YOUR_COMPANY_ID
+        App_Name    APP_NAME
+        Sub_Name    SUB_NAME
 
-The first four keys (``private_key``, ``company_id``, ``app_name``, ``sub_name``) are **mandatory**.
+The first four keys (``Private_Key``, ``Company_Id``, ``App_Name``, ``Sub_Name``) are **mandatory**.
+
+Application and subsystem name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In case your input stream is a ``JSON`` object, you can extract **APP_NAME** and/or **SUB_SYSTEM** from the ``JSON`` using the ``App_Name_Key`` and ``Sub_Name_Key`` options:
+
+.. code-block:: ini
+
+    App_Name_Key kubernetes.namespace_name
+    Sub_Name_Key kubernetes.container_name
+
+For instance, in the bellow ``JSON`` ``kubernetes.pod_name`` will extract *“my name”* value.
+
+.. code-block:: json
+
+    {
+        "context": "something",
+        "code": "200",
+        "stream": "stdout",
+        "docker": {
+            "container_id": "e518dc690e2bc3314842d5bd98b9e24ff7686daa573d063033ea023426c7f667"
+        },
+        "kubernetes": {
+            "namespace_name": "default",
+            "pod_id": "e061eb42-4e4b-11e6-9fd1-fa163edd44fd",
+            "pod_name": "my name",
+            "container_name": "some container",
+            "host": "myhost"
+        },
+        "k8scluster": "ci",
+        "@timestamp": "2016-07-20T17:05:17.743Z",
+        "message": "{"context":"something", "code":"200" }",
+        "type": "k8s",
+    }
+
+Record content
+~~~~~~~~~~~~~~
+
+In case your input stream is a ``JSON`` object and you don’t want to send the entire ``JSON``, rather just a portion of it, you can write the value of the key you want to send in the **Log_Key**.
+For instance, in the above example, if you write:
+
+.. code-block:: ruby
+
+    Log_Key kubernetes
+
+then only the value of ``kubernetes`` key will be sent.
+If you do want to send the entire message then you can just delete this key.
+
+Timestamp
+~~~~~~~~~
+
+If you want to use some field as ``timestamp`` in Coralogix, you can use **Time_Key** option:
+
+.. code-block:: ini
+
+    Time_Key timestamp
+
+then you will see that logs records have timestamp from this field.
+
+**Note:** We accepts only logs which are not older than `24 hours`.
 
 Run
 ---
@@ -80,22 +133,125 @@ To start ``Fluent-Bit`` with *Coralogix* output plugin, execute:
 
     $ fluent-bit -e /fluent-bit/plugins/out_coralogix.so -c /fluent-bit/etc/fluent-bit.conf
 
-With Docker
-~~~~~~~~~~~
+Docker
+~~~~~~
 
 Build Docker image with your **fluent-bit.conf**:
 
 .. code-block:: dockerfile
 
-    FROM fluent/fluent-bit:latest
+    FROM golang:alpine AS builder
+    RUN apk add --no-cache gcc libc-dev git
+    WORKDIR /go/src/app
+    RUN wget https://raw.githubusercontent.com/fluent/fluent-bit/master/conf/plugins.conf && \
+        echo "    Path /fluent-bit/plugins/out_coralogix.so" | tee -a plugins.conf
+    RUN wget https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/plugins/1.x/out_coralogix.go && \
+        go get . && \
+        go build -buildmode=c-shared -o out_coralogix.so .
 
-    # Copy configuration file and output plugin
-    COPY fluent-bit.conf /fluent-bit/etc/fluent-bit.conf
-    COPY out_coralogix.so /fluent-bit/plugins/out_coralogix.so
 
-    # Entry point
-    CMD ["/fluent-bit/bin/fluent-bit", "-e", "/fluent-bit/plugins/out_coralogix.so", "-c", "/fluent-bit/etc/fluent-bit.conf"]
+    FROM fluent/fluent-bit:1.4
+    MAINTAINER Coralogix Inc. <info@coralogix.com>
+    LABEL Description="Special Fluent-Bit image for Coralogix integration" Vendor="Coralogix Inc." Version="1.0.0"
+    COPY --from=builder /lib/libc.musl-x86_64.so* /lib/x86_64-linux-gnu/
+    COPY --from=builder /go/src/app/out_coralogix.so /fluent-bit/plugins/
+    COPY --from=builder /go/src/app/plugins.conf /fluent-bit/etc/
+    COPY fluent-bit.conf /fluent-bit/etc/
 
+Before deploying of your container **don't forget** to mount volume with your logs.
+
+Kubernetes
+~~~~~~~~~~
+
+.. image:: https://img.shields.io/badge/Kubernetes-1.7%2C%201.8%2C%201.9%2C%201.10%2C%201.11%2C%201.12%2C%201.13%2C%201.14%2C%201.15%2C%201.16%2C%201.17%2C%201.18-blue.svg
+    :target: https://github.com/kubernetes/kubernetes/releases
+
+Prerequisites
++++++++++++++
+
+Before you will begin, make sure that you already have:
+
+* Installed *Kubernetes* Cluster
+* Enabled *RBAC* authorization mode support
+
+Installation
+++++++++++++
+
+First, you should to create *Kubernetes secret* with *Coralogix* credentials:
+
+.. code-block:: bash
+
+    $ kubectl -n kube-system create secret generic fluent-bit-coralogix-account-secrets \
+        --from-literal=PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX \
+        --from-literal=COMPANY_ID=XXXX
+
+You should receive something like:
+
+::
+
+    secret "fluent-bit-coralogix-account-secrets" created
+
+Then you need to create ``fluent-bit-coralogix-logger`` resources on your *Kubernetes* cluster with this `manifests <https://github.com/coralogix/integrations-docs/tree/master/integrations/fluent-bit/kubernetes>`_:
+
+.. code-block:: bash
+
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-rbac.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-cm.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-ds.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-svc.yaml
+
+Output:
+
+::
+
+    serviceaccount "fluent-bit-coralogix-service-account" created
+    clusterrole "fluent-bit-coralogix-service-account-role" created
+    clusterrolebinding "fluent-bit-coralogix-service-account" created
+    configmap "fluent-bit-coralogix-config" created
+    daemonset "fluent-bit-coralogix-daemonset" created
+    service "fluent-bit-coralogix-service" created
+
+Now ``fluent-bit-coralogix-logger`` collects logs from your *Kubernetes* cluster.
+
+
+Here is the example of log record:
+
+.. code-block:: json
+
+    {
+        "date": 1586127592.096036,
+        "log": "172.17.0.1 - - [05/Apr/2020:22:59:52 +0000] \"GET / HTTP/1.1\" 200 6 \"\" \"kube-probe/1.18\"\n",
+        "stream": "stdout",
+        "time": "2020-04-05T22:59:52.096035683Z",
+        "kubernetes": {
+            "pod_name": "dashboard-metrics-scraper-84bfdf55ff-l66cf",
+            "namespace_name": "kubernetes-dashboard",
+            "pod_id": "3642a22d-d42f-4867-9b52-57534dc6a6bd",
+            "labels": {
+                "k8s-app": "dashboard-metrics-scraper",
+                "pod-template-hash": "84bfdf55ff"
+            },
+            "annotations": {
+                "seccomp.security.alpha.kubernetes.io/pod": "runtime/default"
+            },
+            "host": "minikube",
+            "container_name": "dashboard-metrics-scraper",
+            "docker_id": "6545097a67cfe7b62af4cab2c02a6c1650dac33c787dcbab9d8d10ca7665b113",
+            "container_hash": "kubernetesui/metrics-scraper@sha256:2026f9f7558d0f25cc6bab74ea201b4e9d5668fbc378ef64e13fddaea570efc0",
+            "container_image": "kubernetesui/metrics-scraper:v1.0.2"
+        }
+    }
+
+Uninstall
++++++++++
+
+If you want to remove ``fluent-bit-coralogix-logger`` from your cluster, execute this:
+
+.. code-block:: bash
+
+    $ kubectl -n kube-system delete secret fluent-bit-coralogix-account-secrets
+    $ kubectl -n kube-system delete svc,ds,cm,clusterrolebinding,clusterrole,sa \
+         -l k8s-app=fluent-bit-coralogix-logger
 
 Development
 -----------
@@ -109,15 +265,12 @@ Requirements
 Sources
 ~~~~~~~
 
-You can download sources here:
-
-* `0.11.x <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/0.11/out_coralogix.go>`_
-* `0.12.x, 1.x <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/0.12/out_coralogix.go>`_
+You can download sources `here <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/plugin/out_coralogix.go>`_.
 
 Build
 ~~~~~
 
 .. code-block:: bash
 
-    $ go get .
-    $ go build -buildmode=c-shared -o out_coralogix.so .
+    $ cd 1.x/
+    $ make

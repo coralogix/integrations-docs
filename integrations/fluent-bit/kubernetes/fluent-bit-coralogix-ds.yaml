@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluent-bit-coralogix-daemonset
+  namespace: kube-system
+  labels:
+    k8s-app: fluent-bit-coralogix-logger
+    version: v1
+    kubernetes.io/cluster-service: "true"
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluent-bit-coralogix-logger
+  template:
+    metadata:
+      labels:
+        k8s-app: fluent-bit-coralogix-logger
+        version: v1
+        kubernetes.io/cluster-service: "true"
+    spec:
+      serviceAccountName: fluent-bit-coralogix-service-account
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: fluent-bit-coralogix
+        image: coralogixrepo/fluent-bit-coralogix-image:latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 0
+        envFrom:
+        - secretRef:
+           name: fluent-bit-coralogix-account-secrets
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /
+            port: fluent-bit-http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /
+            port: fluent-bit-http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 5
+        ports:
+        - name: fluent-bit-http
+          containerPort: 2020
+          protocol: TCP
+        volumeMounts:
+        - name: config
+          mountPath: /fluent-bit/etc/fluent-bit.conf
+          subPath: fluent-bit.conf
+          readOnly: true
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: fluent-bit-coralogix-config
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers

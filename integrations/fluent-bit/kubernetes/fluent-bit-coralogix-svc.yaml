@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: fluent-bit-coralogix-service
+  namespace: kube-system
+  labels:
+    k8s-app: fluent-bit-coralogix-logger
+spec:
+  selector:
+    k8s-app: fluent-bit-coralogix-logger
+  clusterIP: None
+  ports:
+  - name: fluent-bit
+    port: 2020
+    targetPort: 2020
+    protocol: TCP

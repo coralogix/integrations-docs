@@ -29,6 +29,7 @@ Containers
 
 * `Kubernetes(with Filebeat) <integrations/filebeat/README.rst#kubernetes>`_
 * `Kubernetes(with FluentD) <https://github.com/coralogix/fluentd-coralogix-image/blob/master/examples/kubernetes/README.rst>`_
+* `Kubernetes(with Fluent-Bit) <integrations/fluent-bit/README.rst#kubernetes>`_
 * `Docker(with GELF) <https://github.com/coralogix/docker-gelf-example/blob/master/README.rst>`_
 
 Logs/Metrics collectors

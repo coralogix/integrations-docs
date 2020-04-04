@@ -1,0 +1,41 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fluent-bit-coralogix-config
+  namespace: kube-system
+  labels:
+    k8s-app: fluent-bit-coralogix-logger
+data:
+  fluent-bit.conf: |-
+    [SERVICE]
+        Flush         1
+        Daemon        Off
+        Log_Level     info
+        HTTP_Server   On
+        Parsers_File  parsers.conf
+        Plugins_File  plugins.conf
+
+    [INPUT]
+        Name              tail
+        Tag               kube.*
+        Path              /var/log/containers/*.log
+        Parser            docker
+        DB                /var/log/flb_kube.db
+        Mem_Buf_Limit     2MB
+        Skip_Long_Lines   On
+        Refresh_Interval  10
+
+    [FILTER]
+        Name      kubernetes
+        Match     kube.*
+        Merge_Log On
+
+    [OUTPUT]
+        Name          coralogix
+        Match         kube.*
+        Private_Key   ${PRIVATE_KEY}
+        Company_Id    ${COMPANY_ID}
+        App_Name_Key  kubernetes.namespace_name
+        Sub_Name_Key  kubernetes.container_name
+        Time_Key      time
+        Host_Key      kubernetes.host

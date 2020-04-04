@@ -159,7 +159,7 @@ Before deploying of your container **don't forget** to mount volume with your lo
 Kubernetes
 ~~~~~~~~~~
 
-.. image:: https://img.shields.io/badge/Kubernetes-1.7%2C%201.8%2C%201.9%2C%201.10%2C%201.11%2C%201.12%2C%201.13%2C%201.14-blue.svg
+.. image:: https://img.shields.io/badge/Kubernetes-1.7%2C%201.8%2C%201.9%2C%201.10%2C%201.11%2C%201.12%2C%201.13%2C%201.14%2C%201.15%2C%201.16%2C%201.17%2C%201.18-blue.svg
     :target: https://github.com/kubernetes/kubernetes/releases
 
 Prerequisites
