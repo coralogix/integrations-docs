@@ -35,7 +35,7 @@ Installation
 
 .. code-block:: bash
 
-    $ wget -o /fluent-bit/plugins/out_coralogix.so https://github.com/coralogix/integrations-docs/blob/master/integrations/fluent-bit/plugin/out_coralogix.so
+    $ wget -o /fluent-bit/plugins/out_coralogix.so https://github.com/coralogix/integrations-docs/raw/master/integrations/fluent-bit/plugin/out_coralogix.so
 
 Configuration
 -------------
@@ -133,6 +133,13 @@ To start ``Fluent-Bit`` with *Coralogix* output plugin, execute:
 
     $ fluent-bit -e /fluent-bit/plugins/out_coralogix.so -c /fluent-bit/etc/fluent-bit.conf
 
+or add plugin to ``/fluent-bit/etc/plugins.conf`` file:
+
+.. code-block:: ini
+
+    [PLUGINS]
+        Path /fluent-bit/plugins/out_coralogix.so
+
 Docker
 ~~~~~~
 
@@ -145,7 +152,7 @@ Build Docker image with your **fluent-bit.conf**:
     WORKDIR /go/src/app
     RUN wget https://raw.githubusercontent.com/fluent/fluent-bit/master/conf/plugins.conf && \
         echo "    Path /fluent-bit/plugins/out_coralogix.so" | tee -a plugins.conf
-    RUN wget https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/plugins/1.x/out_coralogix.go && \
+    RUN wget https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/plugin/out_coralogix.go && \
         go get . && \
         go build -buildmode=c-shared -o out_coralogix.so .
 
@@ -272,5 +279,5 @@ Build
 
 .. code-block:: bash
 
-    $ cd 1.x/
+    $ cd plugin/
     $ make
