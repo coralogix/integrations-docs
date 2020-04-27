@@ -124,7 +124,6 @@ func FLBPluginFlush(data unsafe.Pointer, length C.int, tag *C.char) int {
         }
 
         // Convert record to JSON
-        //json_record, err := createJSON(record)
         json_record, err := jsoniter.MarshalToString(encodeJSON(record))
         if err != nil {
             log.Printf(" ERROR: %v\n", err)
