@@ -8,4 +8,4 @@ compile:
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build -buildmode=c-shared -o out_coralogix.so .
 
 clean:
-	@rm -rf out_coralogix.so out_coralogix.h src bin
+	@rm -rf out_coralogix.h src bin
