@@ -23,16 +23,18 @@ var endpoint string = "logstashserver.coralogix.com:5044"
 
 // Initialize output parameters
 var (
-    private_key     string
-    company_id      string
-    app_name        string
-    sub_name        string
-    app_name_key    string
-    sub_name_key    string
-    time_key        string
-    log_key         string
-    host_key        string
-    debug           string
+    private_key         string
+    company_id          string
+    app_name            string
+    sub_name            string
+    app_name_key        string
+    sub_name_key        string
+    time_key            string
+    log_key             string
+    host_key            string
+    debug               string
+    compression         string
+    compression_level   int
 )
 
 //export FLBPluginRegister
@@ -52,6 +54,7 @@ func FLBPluginInit(ctx unsafe.Pointer) int {
     time_key = output.FLBPluginConfigKey(ctx, "Time_Key")
     log_key = output.FLBPluginConfigKey(ctx, "Log_Key")
     host_key = output.FLBPluginConfigKey(ctx, "Host_Key")
+    compression = output.FLBPluginConfigKey(ctx, "Compression")
     debug = output.FLBPluginConfigKey(ctx, "Debug")
 
     // Debug output
@@ -66,14 +69,14 @@ func FLBPluginInit(ctx unsafe.Pointer) int {
         return output.FLB_ERROR
     }
 
-    // Check private_key
+    // Check Private Key
     private_key_pattern, _ := regexp.Compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
     if !private_key_pattern.MatchString(private_key) {
         log.Println(" ERROR: invalid Private_Key!")
         return output.FLB_ERROR
     }
 
-    // Check company_id
+    // Check Company ID
     if company_id_integer, err := strconv.ParseInt(company_id, 10, 64); err != nil || company_id_integer < 0 {
         log.Println(" ERROR: invalid Company_Id!")
         return output.FLB_ERROR
@@ -87,6 +90,11 @@ func FLBPluginInit(ctx unsafe.Pointer) int {
     // Check Subsystem name
     if sub_name == "" {
         sub_name = "NO_SUB_NAME"
+    }
+
+    // Check compression level
+    if compression_level, err := strconv.ParseInt(compression, 10, 64); err != nil || compression_level < 0 || compression_level > 9 {
+        compression_level = 3
     }
 
     log.Printf("The Application Name %s and Subsystem Name %s from the Fluent-Bit, has started to send data.", app_name, sub_name)
@@ -109,7 +117,7 @@ func FLBPluginFlush(data unsafe.Pointer, length C.int, tag *C.char) int {
     dec := output.NewDecoder(data, int(length))
 
     // Send logs batch to Logstash
-    connection, err := v2.SyncDial(endpoint, v2.CompressionLevel(3), v2.Timeout(30 * time.Second))
+    connection, err := v2.SyncDial(endpoint, v2.CompressionLevel(compression_level), v2.Timeout(30 * time.Second))
     if err != nil {
         log.Printf(" ERROR: unable connect to %s: %v\n", endpoint, err)
         return output.FLB_ERROR
