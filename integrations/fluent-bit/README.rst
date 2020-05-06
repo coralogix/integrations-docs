@@ -24,8 +24,6 @@ You must provide the following four variables when creating a *Coralogix* logger
 
 **Private Key** – A unique ID which represents your company, this Id will be sent to your mail once you register to *Coralogix*.
 
-**Company Id** – A unique number which represents your company. You can get your company id from the settings tab in the *Coralogix* dashboard.
-
 **Application Name** – The name of your main application, for example, a company named *“SuperData”* would probably insert the *“SuperData”* string parameter or if they want to debug their test environment they might insert the *“SuperData– Test”*.
 
 **SubSystem Name** – Your application probably has multiple subsystems, for example: Backend servers, Middleware, Frontend servers etc. in order to help you examine the data you need, inserting the subsystem parameter is vital.
@@ -55,11 +53,11 @@ Open your ``Fluent-Bit`` configuration file and add *Coralogix* output:
         Name        coralogix
         Match       *
         Private_Key YOUR_PRIVATE_KEY
-        Company_Id  YOUR_COMPANY_ID
         App_Name    APP_NAME
         Sub_Name    SUB_NAME
+        Retry_Limit 5
 
-The first four keys (``Private_Key``, ``Company_Id``, ``App_Name``, ``Sub_Name``) are **mandatory**.
+The first three keys (``Private_Key``, ``App_Name``, ``Sub_Name``) are **mandatory**.
 
 Application and subsystem name
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,20 +148,19 @@ Build Docker image with your **fluent-bit.conf**:
     FROM golang:alpine AS builder
     RUN apk add --no-cache gcc libc-dev git
     WORKDIR /go/src/app
-    RUN wget https://raw.githubusercontent.com/fluent/fluent-bit/master/conf/plugins.conf && \
+    RUN wget -q https://raw.githubusercontent.com/fluent/fluent-bit/master/conf/plugins.conf && \
         echo "    Path /fluent-bit/plugins/out_coralogix.so" | tee -a plugins.conf
-    RUN wget https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/plugin/out_coralogix.go && \
-        go get . && \
-        go build -buildmode=c-shared -o out_coralogix.so .
-
+    RUN wget -q https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/plugin/out_coralogix.go && \
+        wget -q https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/plugin/go.mod && \
+        wget -q https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/plugin/go.sum && \
+        go mod vendor && \
+        go build -buildmode=c-shared -ldflags "-s -w" -mod=vendor -o out_coralogix.so .
 
     FROM fluent/fluent-bit:1.4
     MAINTAINER Coralogix Inc. <info@coralogix.com>
     LABEL Description="Special Fluent-Bit image for Coralogix integration" Vendor="Coralogix Inc." Version="1.0.0"
-    COPY --from=builder /lib/libc.musl-x86_64.so* /lib/x86_64-linux-gnu/
-    COPY --from=builder /go/src/app/out_coralogix.so /fluent-bit/plugins/
     COPY --from=builder /go/src/app/plugins.conf /fluent-bit/etc/
-    COPY fluent-bit.conf /fluent-bit/etc/
+    COPY --from=builder /go/src/app/out_coralogix.so /fluent-bit/plugins/
 
 Before deploying of your container **don't forget** to mount volume with your logs.
 
@@ -189,8 +186,7 @@ First, you should to create *Kubernetes secret* with *Coralogix* credentials:
 .. code-block:: bash
 
     $ kubectl -n kube-system create secret generic fluent-bit-coralogix-account-secrets \
-        --from-literal=PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX \
-        --from-literal=COMPANY_ID=XXXX
+        --from-literal=PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
 
 You should receive something like:
 
