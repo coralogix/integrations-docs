@@ -33,8 +33,8 @@ data:
         Name          coralogix
         Match         kube.*
         Private_Key   ${PRIVATE_KEY}
-        Company_Id    ${COMPANY_ID}
         App_Name_Key  kubernetes.namespace_name
         Sub_Name_Key  kubernetes.container_name
         Time_Key      time
         Host_Key      kubernetes.host
+        Retry_Limit   5
