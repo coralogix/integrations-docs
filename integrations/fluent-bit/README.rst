@@ -89,7 +89,7 @@ For instance, in the bellow ``JSON`` ``kubernetes.pod_name`` will extract *“my
         },
         "k8scluster": "ci",
         "@timestamp": "2016-07-20T17:05:17.743Z",
-        "message": "{"context":"something", "code":"200" }",
+        "message": "{\"context\":\"something\",\"code\":\"200\"}",
         "type": "k8s",
     }
 
@@ -200,9 +200,24 @@ Then you need to create ``fluent-bit-coralogix-logger`` resources on your *Kuber
 .. code-block:: bash
 
     $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-rbac.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-svc.yaml
+
+
+Plugin based
+^^^^^^^^^^^^
+
+.. code-block:: bash
+
     $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-cm.yaml
     $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-ds.yaml
-    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-coralogix-svc.yaml
+
+Native based
+^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-native-coralogix-cm.yaml
+    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/fluent-bit/kubernetes/fluent-bit-native-coralogix-ds.yaml
 
 Output:
 
@@ -223,14 +238,12 @@ Here is the example of log record:
 .. code-block:: json
 
     {
-        "date": 1586127592.096036,
         "log": "172.17.0.1 - - [05/Apr/2020:22:59:52 +0000] \"GET / HTTP/1.1\" 200 6 \"\" \"kube-probe/1.18\"\n",
         "stream": "stdout",
         "time": "2020-04-05T22:59:52.096035683Z",
         "kubernetes": {
             "pod_name": "dashboard-metrics-scraper-84bfdf55ff-l66cf",
             "namespace_name": "kubernetes-dashboard",
-            "pod_id": "3642a22d-d42f-4867-9b52-57534dc6a6bd",
             "labels": {
                 "k8s-app": "dashboard-metrics-scraper",
                 "pod-template-hash": "84bfdf55ff"
@@ -240,8 +253,6 @@ Here is the example of log record:
             },
             "host": "minikube",
             "container_name": "dashboard-metrics-scraper",
-            "docker_id": "6545097a67cfe7b62af4cab2c02a6c1650dac33c787dcbab9d8d10ca7665b113",
-            "container_hash": "kubernetesui/metrics-scraper@sha256:2026f9f7558d0f25cc6bab74ea201b4e9d5668fbc378ef64e13fddaea570efc0",
             "container_image": "kubernetesui/metrics-scraper:v1.0.2"
         }
     }
