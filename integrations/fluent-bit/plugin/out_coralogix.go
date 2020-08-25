@@ -83,6 +83,12 @@ func FLBPluginInit(plugin unsafe.Pointer) int {
 
 //export FLBPluginFlushCtx
 func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int {
+    // Get Coralogix endpoint URL
+    endpoint, exists := os.LookupEnv("CORALOGIX_LOG_URL")
+	if !exists {
+        endpoint = "https://api.coralogix.com/logs/rest/singles"
+    }
+
     // Get hostname
     hostname, err := os.Hostname()
     if err != nil {
@@ -139,7 +145,7 @@ func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int 
     }
 
     // Build request
-    request, err := http.NewRequest(http.MethodPost, "https://api.coralogix.com/logs/rest/singles", &buffer)
+    request, err := http.NewRequest(http.MethodPost, endpoint, &buffer)
     request.Header.Set("Content-Type", "application/json")
     request.Header.Set("Content-Encoding", "gzip")
     request.Header.Set("private_key", config["private_key"])
