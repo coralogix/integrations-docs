@@ -7,6 +7,7 @@ const assert = require('assert');
 assert(process.env.private_key, 'No private key');
 const appName = process.env.app_name ? process.env.app_name : 'NO_APPLICATION';
 const newlinePattern = (process.env.newline_pattern) ? RegExp(process.env.newline_pattern) : /(?:\r\n|\r|\n)/g;
+const coralogixUrl = (process.env.CORALOGIX_URL) ? process.env.CORALOGIX_URL : 'api.coralogix.com';
 
 exports.handler = (event, context, callback) => {
     const payload = new Buffer(event.awslogs.data, 'base64');
@@ -18,7 +19,7 @@ exports.handler = (event, context, callback) => {
             let retryNum = 0;
             let sendRequest = function sendRequest() {
                 let req = https.request({
-                    hostname: 'api.coralogix.com',
+                    hostname: coralogixUrl,
                     port: 443,
                     path: '/api/v1/logs',
                     method: 'POST',
