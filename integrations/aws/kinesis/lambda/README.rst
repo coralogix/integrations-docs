@@ -31,13 +31,10 @@ Setup
     assert(process.env.private_key, 'No private key')
     const appName = process.env.app_name ? process.env.app_name : 'NO_APPLICATION';
     const subName = process.env.sub_name ? process.env.sub_name : 'NO_SUBSYSTEM';
-
-    let newlinePattern = /(?:\r\n|\r|\n)/g;
-    if (process.env.newline_pattern)
-        newlinePattern = RegExp(process.env.newline_pattern);
+    const newlinePattern = (process.env.newline_pattern) ? RegExp(process.env.newline_pattern) : /(?:\r\n|\r|\n)/g;
+    const coralogixUrl = (process.env.CORALOGIX_URL) ? process.env.CORALOGIX_URL : 'api.coralogix.com';
 
     exports.handler = (event, context, callback) => {
-
         function extractEvent(streamEventRecord) {
             return new Buffer(streamEventRecord.kinesis.data, 'base64').toString('ascii');
         }
@@ -54,21 +51,19 @@ Setup
 
         function postEventsToCoralogix(parsedEvents) {
             try {
-                const options = {
-                    hostname: 'api.coralogix.com',
-                    port: 443,
-                    path: '/api/v1/logs',
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                };
-
                 let retries = 3;
                 let timeoutMs = 10000;
                 let retryNum = 0;
                 let sendRequest = function sendRequest() {
-                    let req = https.request(options, function (res) {
+                    let req = https.request({
+                        hostname: coralogixUrl,
+                        port: 443,
+                        path: '/api/v1/logs',
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    }, function (res) {
                         console.log('Status: ' + res.statusCode);
                         console.log('Headers: ' + JSON.stringify(res.headers));
                         res.setEncoding('utf8');
@@ -76,7 +71,6 @@ Setup
                             console.log('Body: ' + body);
                         });
                     });
-
                     req.setTimeout(timeoutMs, () => {
                         req.abort();
                         if (retryNum++ < retries) {
@@ -86,15 +80,12 @@ Setup
                             console.log('problem with request: timeout reached. failed all retries.');
                         }
                     });
-
                     req.on('error', function (e) {
                         console.log('problem with request: ' + e.message);
                     });
-
                     req.write(JSON.stringify(parsedEvents));
                     req.end();
                 };
-
                 sendRequest();
             } catch (ex) {
                 console.log(ex.message);
@@ -104,7 +95,6 @@ Setup
 
         function getSeverityLevel(message) {
             let severity = 3;
-
             if (message.includes('debug'))
                 severity = 1;
             if (message.includes('verbose'))
@@ -117,7 +107,6 @@ Setup
                 severity = 5;
             if (message.includes('critical') || message.includes('panic'))
                 severity = 6;
-
             return severity;
         }
 
