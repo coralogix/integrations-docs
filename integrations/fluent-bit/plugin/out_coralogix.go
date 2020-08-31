@@ -85,7 +85,7 @@ func FLBPluginInit(plugin unsafe.Pointer) int {
 func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int {
     // Get Coralogix endpoint URL
     endpoint, exists := os.LookupEnv("CORALOGIX_LOG_URL")
-	if !exists {
+    if !exists {
         endpoint = "https://api.coralogix.com/logs/rest/singles"
     }
 
