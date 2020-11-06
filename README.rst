@@ -27,6 +27,7 @@ Integrations
 Containers
 ~~~~~~~~~~
 
+* `OpenShift <https://github.com/coralogix/coralogix-operator>`_
 * `Kubernetes(with Filebeat) <integrations/filebeat/README.rst#kubernetes>`_
 * `Kubernetes(with FluentD) <https://github.com/coralogix/fluentd-coralogix-image/blob/master/examples/kubernetes/README.rst>`_
 * `Kubernetes(with Fluent-Bit) <integrations/fluent-bit/README.rst#kubernetes>`_
