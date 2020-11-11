@@ -84,7 +84,7 @@ exports.handler = (event, context, callback) => {
                 "privateKey": process.env.private_key,
                 "applicationName": appName,
                 "subsystemName": process.env.sub_name ? process.env.sub_name : resultParsed.logGroup,
-                "logEntries": parsedEvents.map((logEvent) => {
+                "logEntries": parsedEvents.filter((logEvent) => logEvent.length > 0).map((logEvent) => {
                     return {
                         "timestamp": Date.now(),
                         "severity": getSeverityLevel(logEvent.toLowerCase()),
