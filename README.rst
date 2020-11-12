@@ -74,6 +74,7 @@ Amazon Web Services
 * `AWS Kinesis(with Logstash) <integrations/aws/kinesis/logstash/README.rst>`_
 * `AWS VPC <integrations/aws/vpc/README.rst>`_
 * `AWS ECS <integrations/aws/ecs/README.rst>`_
+* `AWS Lambda <https://github.com/coralogix/aws-lambda-extension>`_
 
 Google Cloud Platform
 ~~~~~~~~~~~~~~~~~~~~~
@@ -84,6 +85,7 @@ Google Cloud Platform
 Other services
 ~~~~~~~~~~~~~~
 
+* `Akamai DataStream <https://github.com/coralogix/akamai-datastream-cli>`_
 * `Okta <integrations/okta/README.rst>`_
 * `Heroku <https://github.com/coralogix/heroku-fluentd-coralogix>`_
 
