@@ -99,6 +99,14 @@ Here is a basic example of **filebeat.yml**:
       APP_NAME: "APP_NAME"
       SUB_SYSTEM: "SUB_NAME"
 
+    processors:
+    - copy_fields:
+        fields:
+        - from: host.name
+          to: beat.hostname
+        fail_on_error: false
+        ignore_missing: true
+
     #----------------------------- Logstash output --------------------------------
 
     output.logstash:
