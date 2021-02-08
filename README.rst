@@ -80,7 +80,7 @@ Google Cloud Platform
 ~~~~~~~~~~~~~~~~~~~~~
 
 * `Google Cloud Storage <integrations/gcp/gcs/README.rst>`_
-
+* `Google Cloud Pub/Sub <integrations/gcp/pubsub/README.rst>`_
 
 Other services
 ~~~~~~~~~~~~~~

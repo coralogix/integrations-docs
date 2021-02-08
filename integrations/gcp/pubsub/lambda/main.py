@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Coralogix GCP function for GCS
+Coralogix GCP function for Pub/Sub
 Author: Coralogix Ltd.
 Email: info@coralogix.com
 """
@@ -10,12 +10,11 @@ Email: info@coralogix.com
 import os
 import re
 import sys
-import gzip
+import base64
 import logging
-from google.cloud import storage
 from coralogix.handlers import CoralogixLogger
 
-__name__ = 'gcsToCoralogix'
+__name__ = 'pubsubToCoralogix'
 __author__ = 'Coralogix Ltd.'
 __email__ = 'info@coralogix.com'
 __copyright__ = 'Copyright 2021, Coralogix Ltd.'
@@ -58,43 +57,28 @@ def to_coralogix(event, context):
             severity = 5
         return severity
 
-    # Initialize GCS client
-    client = storage.Client()
-
     # Initialize Coralogix logger
     logger = CoralogixLogger(
         PRIVATE_KEY,
         APP_NAME,
         SUB_SYSTEM,
-        'GCS'
+        'Pub/Sub'
     )
 
-    logging.info(f"Processing file {event['name']}")
+    logging.info(f"Processing Pub/Sub message ID {context.event_id}")
 
-    # Get file content
-    bucket = client.get_bucket(event['bucket'])
-    blob = bucket.get_blob(event['name'])
-    content = blob.download_as_string()
+    if 'data' in event:
+        # Get event data
+        content = base64.b64decode(event['data']).decode('utf-8')
 
-    # Check if file is compressed
-    if event['contentType'] == 'application/gzip' or \
-       event['name'].endswith('.gz'):
-        logging.info(f"Uncompress file {event['name']}")
-        try:
-            # Decompress file
-            content = gzip.decompress(content)
-        except Exception as exc:
-            logging.fatal(f"Cannot uncompress file {event['name']}: ", exc)
-            sys.exit(1)
+        # Split event into lines and remove empty lines
+        logs = list(filter(None, re.split(NEWLINE_PATTERN, content)))
+        logging.info(f"Number of logs: {len(logs)}")
 
-    # Split file into line and remove empty lines
-    logs = list(filter(None, re.split(NEWLINE_PATTERN, content.decode('utf-8'))))
-    logging.info(f"Number of logs: {len(logs)}")
-
-    # Send logs to Coralogix
-    for log in logs:
-        logger.log(
-            get_severity(log),
-            log,
-            thread_id=f"{event['bucket']}/{event['name']}"
+        # Send logs to Coralogix
+        for log in logs:
+            logger.log(
+                get_severity(log),
+                log,
+                thread_id=context.event_id
         )

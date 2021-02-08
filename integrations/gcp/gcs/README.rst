@@ -26,7 +26,7 @@ Create ``Cloud Function`` in your ``Google Cloud Console`` with following settin
 2. Change ``“Trigger“`` to ``“Cloud Storage“``.
 3. Change ``“Event Type“`` to ``“Finalize/Create“``.
 4. Select your ``GCS Bucket``.
-5. Change ``“Runtime“`` to ``“Python 3.7“``.
+5. Change ``“Runtime“`` to ``“Python 3.8“``.
 6. Paste the following code to `main.py <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/gcp/gcs/lambda/main.py>`_:
 
 .. code-block:: python
@@ -35,7 +35,7 @@ Create ``Cloud Function`` in your ``Google Cloud Console`` with following settin
     # -*- coding: utf-8 -*-
 
     """
-    Coralogix GCP function
+    Coralogix GCP function for GCS
     Author: Coralogix Ltd.
     Email: info@coralogix.com
     """
@@ -51,12 +51,12 @@ Create ``Cloud Function`` in your ``Google Cloud Console`` with following settin
     __name__ = 'gcsToCoralogix'
     __author__ = 'Coralogix Ltd.'
     __email__ = 'info@coralogix.com'
-    __copyright__ = 'Copyright 2019, Coralogix Ltd.'
+    __copyright__ = 'Copyright 2021, Coralogix Ltd.'
     __credits__ = ['Ariel Assaraf', 'Amnon Shahar', 'Eldar Aliiev']
     __license__ = 'Apache Version 2.0'
     __version__ = '1.0.0'
     __maintainer__ = 'Coralogix Ltd.'
-    __date__ = '1 April 2019'
+    __date__ = '8 February 2021'
     __status__ = 'Stable'
 
     # Get function parameters
@@ -99,7 +99,7 @@ Create ``Cloud Function`` in your ``Google Cloud Console`` with following settin
             PRIVATE_KEY,
             APP_NAME,
             SUB_SYSTEM,
-            'GCP'
+            'GCS'
         )
 
         logging.info(f"Processing file {event['name']}")
@@ -111,7 +111,7 @@ Create ``Cloud Function`` in your ``Google Cloud Console`` with following settin
 
         # Check if file is compressed
         if event['contentType'] == 'application/gzip' or \
-           event['name'].endswith('.gz'):
+        event['name'].endswith('.gz'):
             logging.info(f"Uncompress file {event['name']}")
             try:
                 # Decompress file
@@ -132,12 +132,12 @@ Create ``Cloud Function`` in your ``Google Cloud Console`` with following settin
                 thread_id=f"{event['bucket']}/{event['name']}"
             )
 
+
 7. Paste the following packages to `requirements.txt <https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/gcp/gcs/lambda/requirements.txt>`_:
 
 ::
 
-    google-cloud-storage>=1.14.0
-    coralogix_logger>=2.0.1.post7
+    coralogix_logger>=2.0.4
 
 8. Increase ``“Timeout“`` to ``“60 seconds“``.
 9. Add the mandatory environment variables: ``private_key``, ``app_name``, ``sub_name``:
@@ -168,7 +168,7 @@ To setup the function, execute this:
     $ gcloud functions deploy gcsToCoralogix \
         --project=YOUR_GCP_PROJECT_ID \
         --region=us-central1 \
-        --runtime=python37 \
+        --runtime=python38 \
         --memory=1024MB \
         --timeout=60s \
         --entry-point=to_coralogix \
