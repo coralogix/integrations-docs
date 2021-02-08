@@ -28,7 +28,7 @@ resource "google_storage_bucket_object" "function_archive" {
 resource "google_cloudfunctions_function" "coralogix_function" {
   name                  = "${var.bucket_name}_to-coralogix"
   description           = "Cloud Function which send logs from storage bucket to Coralogix."
-  runtime               = "python37"
+  runtime               = "python38"
   available_memory_mb   = 1024
   timeout               = 60
   entry_point           = "to_coralogix"
