@@ -276,6 +276,4 @@ If you want to remove ``filebeat-coralogix-logger`` from your cluster, execute t
 .. code-block:: bash
 
     $ kubectl -n kube-system delete secret filebeat-coralogix-account-secrets
-    $ kubectl -n kube-system delete secret filebeat-coralogix-certificate
-    $ kubectl -n kube-system delete svc,ds,cm,clusterrolebinding,clusterrole,sa \
-         -l k8s-app=filebeat-coralogix-logger
+    $ kubectl delete -k https://github.com/coralogix/integrations-docs/integrations/filebeat/kubernetes
