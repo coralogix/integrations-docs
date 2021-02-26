@@ -1,22 +1,17 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: filebeat-coralogix-config
-  namespace: kube-system
-  labels:
-    k8s-app: filebeat-coralogix-logger
+  name: filebeat-config
 data:
   filebeat.yml: |-
     name: filebeat-coralogix
     tags: ["kubernetes", "containers"]
   
-    filebeat.inputs:
-    - type: docker
-      containers.ids:
-      - "*"
-      processors:
-        - add_kubernetes_metadata:
-            in_cluster: true
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          node: ${NODE_NAME}
+          hints.enabled: true
 
     http:
       enabled: true
@@ -24,33 +19,57 @@ data:
       port: 5066
 
     processors:
-    - add_cloud_metadata: ~
     - drop_event:
         when:
           equals:
             kubernetes.container.name: "filebeat-coralogix"
+    - add_cloud_metadata: ~
     - decode_json_fields:
         fields: ["message"]
         process_array: true
         max_depth: 3
         target: "message"
         overwrite_keys: true
-    - dissect:
-        tokenizer: "%{APP_NAME}"
-        field: "kubernetes.namespace"
-        target_prefix: ""
-    - dissect:
-        tokenizer: "%{SUB_SYSTEM}"
-        field: "kubernetes.container.name"
-        target_prefix: ""
+    - add_fields:
+        target: ''
+        fields:
+          cluster_name: ${CLUSTER_NAME:cluster.local}
+    - copy_fields:
+        fields:
+        - from: kubernetes.namespace
+          to: APP_NAME
+        - from: kubernetes.container.name
+          to: SUB_SYSTEM
+        - from: kubernetes.node.hostname
+          to: beat.hostname
+        - from: container.id
+          to: kubernetes.container.id
+        fail_on_error: false
+        ignore_missing: true
     - rename:
         fields:
-         - from: "meta.cloud"
-           to: "cloud"
+         - from: kubernetes.labels
+           to: kubernetes.pod.labels
+        fail_on_error: false
         ignore_missing: true
-        fail_on_error: true
     - drop_fields:
-        fields: ["source", "log", "input", "prospector", "stream", "offset", "meta"]
+        ignore_missing: true
+        fields:
+        - agent
+        - ecs
+        - container
+        - source
+        - log
+        - input
+        - prospector
+        - host
+        - stream
+        - offset
+        - kubernetes.namespace_uid
+        - kubernetes.namespace_labels
+        - kubernetes.node.uid
+        - kubernetes.pod.uid
+        - kubernetes.replicaset
 
     fields_under_root: true
     fields:
