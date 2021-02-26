@@ -272,7 +272,7 @@ Here is the example of log record:
      ]
    }
 
-To just generate installation manifests for future customization, just execute:
+To generate installation manifests for future customization, just execute:
 
 .. code-block:: bash
 
