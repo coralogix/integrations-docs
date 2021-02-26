@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kube-system
+namePrefix: coralogix-
+commonLabels:
+  k8s-app: coralogix-filebeat-logger
+images:
+- name: docker.elastic.co/beats/filebeat
+  newTag: 7.11.1
+resources:
+- filebeat-coralogix-rbac.yaml
+- filebeat-coralogix-cm.yaml
+- filebeat-coralogix-secret.yaml
+- filebeat-coralogix-ds.yaml
+- filebeat-coralogix-svc.yaml

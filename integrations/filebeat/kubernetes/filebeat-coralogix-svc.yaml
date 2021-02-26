@@ -1,13 +1,8 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: filebeat-coralogix-service
-  namespace: kube-system
-  labels:
-    k8s-app: filebeat-coralogix-logger
+  name: filebeat-service
 spec:
-  selector:
-    k8s-app: filebeat-coralogix-logger
   clusterIP: None
   ports:
   - name: filebeat

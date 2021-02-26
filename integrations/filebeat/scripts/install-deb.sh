@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILEBEAT_VERSION=${FILEBEAT_VERSION:-7.4.0}
+FILEBEAT_VERSION=${FILEBEAT_VERSION:-7.11.1}
 FILEBEAT_ARCH=$(dpkg --print-architecture)
 
 echo "Installing dependencies..."

@@ -57,7 +57,7 @@ This script will install ``Filebeat`` on your machine, prepare configuration and
 
 .. code-block:: bash
 
-    $ export FILEBEAT_VERSION=6.6.2
+    $ export FILEBEAT_VERSION=7.11.1
 
 Configuration
 -------------
@@ -167,7 +167,7 @@ Before deploying of your container **don't forget** to mount volume with your lo
 Kubernetes
 ~~~~~~~~~~
 
-.. image:: https://img.shields.io/badge/Kubernetes-1.7%2C%201.8%2C%201.9%2C%201.10%2C%201.11%2C%201.12%2C%201.13%2C%201.14%2C%201.15%2C%201.16%2C%201.17%2C%201.18-blue.svg
+.. image:: https://img.shields.io/badge/Kubernetes-1.9%2C%201.10%2C%201.11%2C%201.12%2C%201.13%2C%201.14%2C%201.15%2C%201.16%2C%201.17%2C%201.18%2C%201.19-blue.svg
     :target: https://github.com/kubernetes/kubernetes/releases
 
 Prerequisites
@@ -185,37 +185,34 @@ First, you should to create *Kubernetes secret* with *Coralogix* credentials:
 
 .. code-block:: bash
 
-    $ kubectl -n kube-system create secret generic filebeat-coralogix-account-secrets \
+    $ kubectl -n kube-system create secret generic coralogix-filebeat-account-secrets \
         --from-literal=PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX \
-        --from-literal=COMPANY_ID=XXXX
+        --from-literal=COMPANY_ID=XXXX \
+        --from-literal=CLUSTER_NAME=cluster.local
 
 You should receive something like:
 
 ::
 
-    secret "filebeat-coralogix-account-secrets" created
+    secret "coralogix-filebeat-account-secrets" created
 
 Then you need to create ``filebeat-coralogix-logger`` resources on your *Kubernetes* cluster with this `manifests <https://github.com/coralogix/integrations-docs/tree/master/integrations/filebeat/kubernetes>`_:
 
 .. code-block:: bash
 
-    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-rbac.yaml
-    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-cm.yaml
-    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-secret.yaml
-    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-ds.yaml
-    $ kubectl create -f https://raw.githubusercontent.com/coralogix/integrations-docs/master/integrations/filebeat/kubernetes/filebeat-coralogix-svc.yaml
+    $ kubectl create -k https://github.com/coralogix/integrations-docs/integrations/filebeat/kubernetes
 
 Output:
 
 ::
 
-    serviceaccount "filebeat-coralogix-service-account" created
-    clusterrole "filebeat-coralogix-service-account-role" created
-    clusterrolebinding "filebeat-coralogix-service-account" created
-    configmap "filebeat-coralogix-config" created
-    secret "filebeat-coralogix-certificate" created
-    daemonset "filebeat-coralogix-daemonset" created
-    service "filebeat-coralogix-service" created
+    serviceaccount "coralogix-filebeat-service-account" created
+    clusterrole "coralogix-filebeat-cluster-role" created
+    clusterrolebinding "coralogix-filebeat-cluster-role-binding" created
+    configmap "coralogix-filebeat-config" created
+    secret "coralogix-filebeat-certificate" created
+    daemonset "coralogix-filebeat-daemonset" created
+    service "coralogix-filebeat-service" created
 
 Now ``filebeat-coralogix-logger`` collects logs from your *Kubernetes* cluster.
 
