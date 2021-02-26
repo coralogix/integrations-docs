@@ -238,13 +238,13 @@ Here is the example of log record:
          "pod-template-hash": "989689126"
        },
        "namespace": "kube-system",
-       "node": {.. code-block:: bash
-
-    $ kubectl -n kube-system create secret generic coralogix-filebeat-account-secrets \
-        --from-literal=PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX \
-        --from-literal=COMPANY_ID=XXXX \
-        --from-literal=CLUSTER_NAME=cluster.local
-         "name": "gke-coralogix-test-default-pool-4d86c144-sbkd"
+       "node": {
+         "name"  :  "minikube" ,
+         "labels"  : {
+           "kubernetes_io/arch"  :  "amd64" ,
+           "kubernetes_io/os"  :  "linux" 
+         },
+         "hostname"  :  "minikube"
        },
        "pod": {
          "name": "kube-dns-fdfbdf56b-jbbw2",
