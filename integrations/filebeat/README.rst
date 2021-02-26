@@ -216,7 +216,6 @@ Output:
 
 Now ``filebeat-coralogix-logger`` collects logs from your *Kubernetes* cluster.
 
-
 Here is the example of log record:
 
 .. code-block:: json
@@ -239,7 +238,12 @@ Here is the example of log record:
          "pod-template-hash": "989689126"
        },
        "namespace": "kube-system",
-       "node": {
+       "node": {.. code-block:: bash
+
+    $ kubectl -n kube-system create secret generic coralogix-filebeat-account-secrets \
+        --from-literal=PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX \
+        --from-literal=COMPANY_ID=XXXX \
+        --from-literal=CLUSTER_NAME=cluster.local
          "name": "gke-coralogix-test-default-pool-4d86c144-sbkd"
        },
        "pod": {
@@ -267,6 +271,12 @@ Here is the example of log record:
        "beats_input_codec_plain_applied"
      ]
    }
+
+To just generate installation manifests for future customization, just execute:
+
+.. code-block:: bash
+
+    $ kubectl kustomize https://github.com/coralogix/integrations-docs/integrations/filebeat/kubernetes
 
 Uninstall
 +++++++++
