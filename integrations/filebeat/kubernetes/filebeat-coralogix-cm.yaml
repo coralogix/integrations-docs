@@ -62,6 +62,7 @@ data:
         - log
         - input
         - prospector
+        - host
         - stream
         - offset
         - kubernetes.namespace_uid
