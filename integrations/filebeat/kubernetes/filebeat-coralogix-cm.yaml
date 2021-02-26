@@ -40,7 +40,7 @@ data:
           to: APP_NAME
         - from: kubernetes.container.name
           to: SUB_SYSTEM
-        - from: kubernetes.node.hostnamefilebeat-coralogix-svc.yaml
+        - from: kubernetes.node.hostname
           to: beat.hostname
         - from: container.id
           to: kubernetes.container.id
