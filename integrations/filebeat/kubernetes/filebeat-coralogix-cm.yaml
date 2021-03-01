@@ -9,13 +9,13 @@ data:
   
     filebeat.autodiscover:
       providers:
-        - type: kubernetes
-          node: ${NODE_NAME}
-          hints.enabled: true
-          hints.default_config:
-            type: container
-            paths:
-            - /var/log/containers/*-${data.container.id}.log
+      - type: kubernetes
+        node: ${NODE_NAME}
+        hints.enabled: true
+        hints.default_config:
+          type: container
+          paths:
+          - /var/log/containers/*-${data.container.id}.log
 
     http:
       enabled: true
