@@ -1,0 +1,38 @@
+image:
+  repository: coralogixrepo/fluent-bit-coralogix-image
+  pullPolicy: Always
+  tag: latest
+config:
+  service: |
+    [SERVICE]
+        Flush         1
+        Daemon        Off
+        Log_Level     warning
+        HTTP_Server   On
+        Parsers_File  parsers.conf
+        Plugins_File  plugins.conf
+  inputs: |
+    [INPUT]
+        Name              tail
+        Tag               kube.*
+        Path              /var/log/containers/*.log
+        Parser            docker
+        DB                /var/log/flb_kube.db
+        Mem_Buf_Limit     5MB
+        Skip_Long_Lines   On
+        Refresh_Interval  10
+  filters: |
+    [FILTER]
+        Name                kubernetes
+        Match               kube.*
+        K8S-Logging.Exclude On
+  outputs: |
+    [OUTPUT]
+        Name          coralogix
+        Match         kube.*
+        Private_Key   ${PRIVATE_KEY}
+        App_Name_Key  kubernetes.namespace_name
+        Sub_Name_Key  kubernetes.container_name
+        Time_Key      time
+        Host_Key      kubernetes.host
+        Retry_Limit   5
