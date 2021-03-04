@@ -271,14 +271,14 @@ If you want to remove ``fluent-bit-coralogix-logger`` from your cluster, execute
 Helm chart
 ++++++++++
 
-You can deploy Fluent-Bit based on official Helm `chart<https://github.com/fluent/helm-charts/tree/main/charts/fluent-bit>`_.
+You can deploy Fluent-Bit based on official Helm `chart <https://github.com/fluent/helm-charts/tree/main/charts/fluent-bit>`_.
 For this you should add appropriate Helm repo:
 
 .. code-block:: bash
 
     $ helm repo add fluent https://fluent.github.io/helm-charts
 
-Download `appropriate parameters file<https://github.com/coralogix/integrations-docs/tree/master/integrations/fluent-bit/helm>`_ then install prefered version of Coralogix integration.
+Download `appropriate parameters file <https://github.com/coralogix/integrations-docs/tree/master/integrations/fluent-bit/helm>`_ then install prefered version of Coralogix integration.
 
 Plugin based
 ^^^^^^^^^^^^
