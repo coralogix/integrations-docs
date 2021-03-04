@@ -1,0 +1,74 @@
+config:
+  service: |
+    [SERVICE]
+        Flush         1
+        Daemon        Off
+        Log_Level     warning
+        HTTP_Server   On
+        Parsers_File  parsers.conf
+  inputs: |
+    [INPUT]
+        Name                tail
+        Tag                 kube.*
+        Path                /var/log/containers/*.log
+        DB                  /var/log/flb_kube.db
+        Parser              docker
+        Mem_Buf_Limit       5MB
+        Refresh_Interval    10
+    [INPUT]
+        Name systemd
+        Tag host.*
+        Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+        Read_From_Tail On
+  filters: |
+    [FILTER]
+        Name                kubernetes
+        Match               *
+        Merge_Log           On
+        Merge_Log_Key       log
+        K8S-Logging.Exclude On
+    [FILTER]
+        Name            nest
+        Match           *
+        Operation       lift
+        Nested_under    kubernetes
+        Add_prefix      kubernetes.
+    [FILTER]
+        Name    modify
+        Match   *
+        Copy    kubernetes.namespace_name applicationName
+        Copy    kubernetes.container_name subsystemName
+        Copy    kubernetes.host computerName
+        Remove  kubernetes.container_hash
+        Remove  kubernetes.docker_id
+        Remove  kubernetes.pod_id
+    [FILTER]
+        Name            nest
+        Match           *
+        Operation       nest
+        Wildcard        kubernetes.*
+        Nest_under      kubernetes
+        Remove_prefix   kubernetes.
+    [FILTER]
+        Name        nest
+        Match       *
+        Operation   nest
+        Wildcard    kubernetes
+        Wildcard    log
+        Wildcard    time
+        Wildcard    stream
+        Nest_under  json
+  outputs: |
+    [OUTPUT]
+        Name            http
+        Match           *
+        Host            api.coralogix.com
+        Port            443
+        URI             /logs/rest/singles
+        Format          json_lines
+        JSON_Date_Key   timestamp
+        Compress        On
+        TLS             On
+        Header          private_key ${PRIVATE_KEY}
+        Header          coralogix-timeunit seconds
+        Retry_Limit     5

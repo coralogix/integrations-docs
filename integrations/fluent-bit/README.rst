@@ -104,7 +104,7 @@ For instance, in the above example, if you write:
     Log_Key kubernetes
 
 then only the value of ``kubernetes`` key will be sent.
-If you do want to send the entire message then you can just delete this key.
+If you do want to send the entire meshttps://github.com/fluent/helm-charts/tree/main/charts/fluent-bitsage then you can just delete this key.
 
 Timestamp
 ~~~~~~~~~
@@ -138,7 +138,7 @@ or add plugin to ``/fluent-bit/etc/plugins.conf`` file:
     [PLUGINS]
         Path /fluent-bit/plugins/out_coralogix.so
 
-Docker
+Dockerhttps://github.com/fluent/helm-charts/tree/main/charts/fluent-bit
 ~~~~~~
 
 Build Docker image with your **fluent-bit.conf**:
@@ -268,6 +268,32 @@ If you want to remove ``fluent-bit-coralogix-logger`` from your cluster, execute
     $ kubectl -n kube-system delete svc,ds,cm,clusterrolebinding,clusterrole,sa \
          -l k8s-app=fluent-bit-coralogix-logger
 
+Helm chart
+++++++++++
+
+You can deploy Fluent-Bit based on official Helm `chart<https://github.com/fluent/helm-charts/tree/main/charts/fluent-bit>`_.
+For this you should add appropriate Helm repo:
+
+.. code-block:: bash
+
+    $ helm repo add fluent https://fluent.github.io/helm-charts
+
+Download `appropriate parameters file<https://github.com/coralogix/integrations-docs/tree/master/integrations/fluent-bit/helm>`_ then install prefered version of Coralogix integration.
+
+Plugin based
+^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    $ helm install --name fluent-bit -f values.plugin.yml --set env.PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX fluent/fluent-bit
+
+Native based
+^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    $ helm install --name fluent-bit -f values.native.yml --set env.PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX fluent/fluent-bit
+
 Development
 -----------
 
@@ -289,3 +315,4 @@ Build
 
     $ cd plugin/
     $ make
+
