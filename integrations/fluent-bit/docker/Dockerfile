@@ -9,7 +9,7 @@ RUN wget -q https://raw.githubusercontent.com/coralogix/integrations-docs/master
     go mod vendor && \
     go build -buildmode=c-shared -ldflags "-s -w" -mod=vendor -o out_coralogix.so .
 
-FROM fluent/fluent-bit:1.5
+FROM fluent/fluent-bit:1.7
 MAINTAINER Coralogix Inc. <info@coralogix.com>
 LABEL Description="Special Fluent-Bit image for Coralogix integration" Vendor="Coralogix Inc." Version="1.0.0"
 COPY --from=builder /lib/libc.musl-x86_64.so* /lib/x86_64-linux-gnu/
