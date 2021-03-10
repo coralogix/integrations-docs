@@ -21,12 +21,12 @@ import (
 	"github.com/thedevsaddam/gojsonq"
 )
 
-// FLBPluginRegister export
+//export FLBPluginRegister
 func FLBPluginRegister(def unsafe.Pointer) int {
 	return output.FLBPluginRegister(def, "coralogix", "Send output to Coralogix")
 }
 
-// FLBPluginInit export
+//export FLBPluginInit
 func FLBPluginInit(plugin unsafe.Pointer) int {
 	// Get output parameters
 	endpoint := output.FLBPluginConfigKey(plugin, "Endpoint")
@@ -89,7 +89,12 @@ func FLBPluginInit(plugin unsafe.Pointer) int {
 	return output.FLB_OK
 }
 
-// FLBPluginFlushCtx export
+//export FLBPluginFlush
+func FLBPluginFlush(data unsafe.Pointer, length C.int, tag *C.char) int {
+	return output.FLB_OK
+}
+
+//export FLBPluginFlushCtx
 func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int {
 	// Get plugin instance configuration
 	config := output.FLBPluginGetContext(ctx).(map[string]string)
@@ -179,12 +184,17 @@ func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int 
 	return output.FLB_OK
 }
 
-// FLBPluginExit export
+//export FLBPluginExit
 func FLBPluginExit() int {
 	return output.FLB_OK
 }
 
-// Encode record to UTF-8
+//export FLBPluginExitCtx
+func FLBPluginExitCtx(ctx unsafe.Pointer) int {
+	return output.FLB_OK
+}
+
+// encodeJSON encodes record to UTF-8
 func encodeJSON(record map[interface{}]interface{}) map[string]interface{} {
 	m := make(map[string]interface{})
 	for k, v := range record {
