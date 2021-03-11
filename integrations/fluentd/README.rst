@@ -60,7 +60,9 @@ If you installed ``Fluentd`` using the ``Ruby Gem``, the config file is located 
 .. code-block:: ruby
 
     <match **>
+      @id coralogix
       @type coralogix
+      @log_level warn
       privatekey "#{ENV['PRIVATE_KEY']}"
       appname "prod"
       subsystemname "fluentd"
@@ -139,7 +141,9 @@ This plugin supports sending data via proxy. Here is the example of the configur
 .. code-block:: ruby
 
     <match **>
+      @id coralogix
       @type coralogix
+      @log_level warn
       privatekey "#{ENV['PRIVATE_KEY']}"
       appname "prod"
       subsystemname "fluentd"
