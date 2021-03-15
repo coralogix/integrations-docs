@@ -61,6 +61,8 @@ Single file
 
     <match access.**>
       @type coralogix
+      @id coralogix
+      @log_level warn
       privatekey "#{ENV['PRIVATE_KEY']}"
       appname "nginx"
       subsystemname "access"
@@ -106,6 +108,8 @@ Multiple files
 
     <match {access,error}.**>
       @type coralogix
+      @id coralogix
+      @log_level warn
       privatekey "#{ENV['PRIVATE_KEY']}"
       appname "nginx"
       subsystemname "$tag"
@@ -132,6 +136,8 @@ JSON file
 
     <match application.**>
       @type coralogix
+      @id coralogix
+      @log_level warn
       privatekey "#{ENV['PRIVATE_KEY']}"
       appname "production"
       subsystemname "application"
@@ -165,6 +171,8 @@ Nested JSON field
 
     <match application.**>
       @type coralogix
+      @id coralogix
+      @log_level warn
       privatekey "#{ENV['PRIVATE_KEY']}"
       appname "production"
       subsystemname "application"
