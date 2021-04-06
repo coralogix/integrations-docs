@@ -1,4 +1,4 @@
-FROM fluent/fluentd:v1.11-1
+FROM fluent/fluentd:v1.12-1
 USER root
 RUN apk add --no-cache --update --virtual .build-deps build-base ruby-dev && \
     gem install fluent-plugin-docker_metadata_filter \
@@ -8,6 +8,7 @@ RUN apk add --no-cache --update --virtual .build-deps build-base ruby-dev && \
                 fluent-plugin-coralogix && \
     gem sources --clear-all && \
     apk del .build-deps && \
-    rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem
+    rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem && \
+    ulimit -n 65536
 
 COPY fluent.conf /fluentd/etc/
