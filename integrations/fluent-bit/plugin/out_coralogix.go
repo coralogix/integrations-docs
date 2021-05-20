@@ -124,7 +124,7 @@ func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int 
 		}
 
 		// Convert record to JSON
-		jsonRecord, err := jsoniter.MarshalToString(encodeJSON(record))
+		jsonRecord, err := jsoniter.MarshalToString(toStringMap(record))
 		if err != nil {
 			log.Printf(" ERROR: %v\n", err)
 			continue
@@ -194,22 +194,48 @@ func FLBPluginExitCtx(ctx unsafe.Pointer) int {
 	return output.FLB_OK
 }
 
-// encodeJSON encodes record to UTF-8
-func encodeJSON(record map[interface{}]interface{}) map[string]interface{} {
-	m := make(map[string]interface{})
-	for k, v := range record {
+// toStringMap recursively goes through the slice and converts []byte
+// to string so that jsonitor.MarshalToString/json.Marshal don't
+// encode []byte to Base64.
+func toStringSlice(slice []interface{}) []interface{} {
+	var s []interface{}
+	for _, v := range slice {
 		switch t := v.(type) {
 		case []byte:
-			// prevent encoding to base64
-			m[k.(string)] = string(t)
+			s = append(s, string(t))
 		case map[interface{}]interface{}:
-			if nextValue, ok := record[k].(map[interface{}]interface{}); ok {
-				m[k.(string)] = encodeJSON(nextValue)
-			}
+			s = append(s, toStringMap(t))
+		case []interface{}:
+			s = append(s, toStringSlice(t))
 		default:
-			m[k.(string)] = v
+			s = append(s, t)
 		}
 	}
+	return s
+}
+
+// toStringMap recursively goes through the map and converts []byte
+// to string so that jsonitor.MarshalToString/json.Marshal don't
+// encode []byte to Base64.
+func toStringMap(record map[interface{}]interface{}) map[string]interface{} {
+	m := make(map[string]interface{})
+	for k, v := range record {
+		key, ok := k.(string)
+		if !ok {
+			continue
+		}
+		switch t := v.(type) {
+		case []byte:
+			m[key] = string(t)
+		case map[interface{}]interface{}:
+			m[key] = toStringMap(t)
+		case []interface{}:
+			m[key] = toStringSlice(t)
+		default:
+			m[key] = v
+		}
+	}
+
 	return m
 }
 
