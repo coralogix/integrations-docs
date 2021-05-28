@@ -138,7 +138,7 @@ or add plugin to ``/fluent-bit/etc/plugins.conf`` file:
     [PLUGINS]
         Path /fluent-bit/plugins/out_coralogix.so
 
-Dockerhttps://github.com/fluent/helm-charts/tree/main/charts/fluent-bit
+Docker
 ~~~~~~
 
 Build Docker image with your **fluent-bit.conf**:
