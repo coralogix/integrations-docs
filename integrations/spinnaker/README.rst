@@ -1,5 +1,5 @@
 Spinnaker integration
-======================
+=====================
 
 .. image:: images/spinnaker.svg
    :height: 70px

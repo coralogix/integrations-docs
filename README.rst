@@ -58,6 +58,7 @@ CI/CD systems
 
 * `Jenkins <https://github.com/coralogix/jenkins-coralogix-plugin>`_
 * `CircleCI <https://github.com/coralogix-circleci/coralogix-orb>`_
+* `Argo CD <integrations/argocd/README.rst>`_
 * `Spinnaker <integrations/spinnaker/README.rst>`_
 
 Servers
