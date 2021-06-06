@@ -2,8 +2,8 @@ Spinnaker integration
 ======================
 
 .. image:: images/spinnaker.svg
-   :height: 100px
-   :width: 250px
+   :height: 70px
+   :width: 300px
    :scale: 50 %
    :alt: Spinnaker
    :align: left
