@@ -48,7 +48,7 @@ Add ``webhook``, ``template`` and ``trigger`` to **argocd-notifications-cm** Con
           value: Bearer $coralogix-api-token
         - name: Content-Type
           value: application/json
-      template.coralogix-tag: |
+      template.coralogix: |
         webhook:
           coralogix:
             method: POST
@@ -61,7 +61,7 @@ Add ``webhook``, ``template`` and ``trigger`` to **argocd-notifications-cm** Con
               }
       trigger.coralogix-on-success: |
         - when: app.status.operationState.phase in ['Succeeded']
-          send: [coralogix-tag]
+          send: [coralogix]
 
 Register notification for your application:
 
@@ -72,4 +72,4 @@ Register notification for your application:
     metadata:
       name: my-app
       annotations:
-        notifications.argoproj.io/subscribe.coralogix-on-success.coralogix-tag: ""
+        notifications.argoproj.io/subscribe.coralogix-on-success.coralogix: ""
