@@ -6,7 +6,7 @@ commonLabels:
   k8s-app: coralogix-filebeat-logger
 images:
 - name: docker.elastic.co/beats/filebeat
-  newTag: 7.11.1
+  newTag: 7.13.3
 resources:
 - filebeat-coralogix-rbac.yaml
 - filebeat-coralogix-cm.yaml
