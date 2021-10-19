@@ -31,6 +31,12 @@ data:
         K8S-Logging.Exclude On
 
     [FILTER]
+        Name    lua
+        Match   *
+        script  /fluent-bit/etc/functions.lua
+        call    dedot
+
+    [FILTER]
         Name            nest
         Match           *
         Operation       lift
