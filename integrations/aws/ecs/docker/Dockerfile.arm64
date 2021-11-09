@@ -1,0 +1,16 @@
+FROM fluent/fluentd:v1.14-arm64-debian
+USER root
+RUN BUILD_DEPS="make gcc g++ libc-dev ruby-dev libffi-dev" && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends $BUILD_DEPS && \
+    gem install fluent-plugin-docker_metadata_filter \
+                fluent-plugin-concat \
+                fluent-plugin-detect-exceptions \
+                fluent-plugin-s3 \
+                fluent-plugin-coralogix && \
+    gem sources --clear-all && \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS && \
+    rm -rf /var/lib/apt/lists/* /home/fluent/.gem/ruby/*/cache/*.gem && \
+    ulimit -n 65536
+
+COPY fluent.conf /fluentd/etc/
