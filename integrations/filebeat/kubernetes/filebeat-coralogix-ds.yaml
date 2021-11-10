@@ -2,15 +2,11 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: filebeat-daemonset
-  labels:
-    kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels: {}
   template:
     metadata:
-      labels:
-        kubernetes.io/cluster-service: "true"
     spec:
       serviceAccountName: filebeat-service-account
       terminationGracePeriodSeconds: 30

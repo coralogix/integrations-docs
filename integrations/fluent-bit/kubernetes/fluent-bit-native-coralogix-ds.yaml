@@ -5,8 +5,6 @@ metadata:
   namespace: kube-system
   labels:
     k8s-app: fluent-bit-coralogix-logger
-    version: v1
-    kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels:
@@ -15,8 +13,6 @@ spec:
     metadata:
       labels:
         k8s-app: fluent-bit-coralogix-logger
-        version: v1
-        kubernetes.io/cluster-service: "true"
       annotations:
         fluentbit.io/exclude: "true"
     spec:
