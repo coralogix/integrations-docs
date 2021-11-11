@@ -272,27 +272,30 @@ Helm chart
 ++++++++++
 
 You can deploy Fluent-Bit based on official Helm `chart <https://github.com/fluent/helm-charts/tree/main/charts/fluent-bit>`_.
-For this you should add appropriate Helm repo:
 
-.. code-block:: bash
-
-    $ helm repo add fluent https://fluent.github.io/helm-charts
-
-Download `appropriate parameters file <https://github.com/coralogix/integrations-docs/tree/master/integrations/fluent-bit/helm>`_ then install prefered version of Coralogix integration.
+Download `appropriate parameters file <https://github.com/coralogix/integrations-docs/tree/master/integrations/fluent-bit/helm>`_, fill the `PRIVATE_KEY` env and install prefered version of Coralogix integration.
 
 Plugin based
 ^^^^^^^^^^^^
 
 .. code-block:: bash
 
-    $ helm install --name fluent-bit -f values.plugin.yml --set env.PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX fluent/fluent-bit
+    $ helm install coralogix fluent-bit \
+       --repo https://fluent.github.io/helm-charts \
+       --values values.plugin.yaml \
+       --namespace coralogix \
+       --create-namespace
 
 Native based
 ^^^^^^^^^^^^
 
 .. code-block:: bash
 
-    $ helm install --name fluent-bit -f values.native.yml --set env.PRIVATE_KEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX fluent/fluent-bit
+    $ helm install coralogix fluent-bit \
+       --repo https://fluent.github.io/helm-charts \
+       --values values.native.yaml \
+       --namespace coralogix \
+       --create-namespace
 
 Development
 -----------
