@@ -8,14 +8,15 @@ env:
   value: ""
 
 config:
-  service: |
+  service: |-
     [SERVICE]
         Flush         1
         Daemon        Off
         Log_Level     warning
         HTTP_Server   On
         Parsers_File  parsers.conf
-  inputs: |
+
+  inputs: |-
     [INPUT]
         Name                tail
         Tag                 kube.*
@@ -24,24 +25,28 @@ config:
         Parser              docker
         Mem_Buf_Limit       5MB
         Refresh_Interval    10
+
     [INPUT]
         Name systemd
         Tag host.*
         Systemd_Filter _SYSTEMD_UNIT=kubelet.service
         Read_From_Tail On
-  filters: |
+
+  filters: |-
     [FILTER]
         Name                kubernetes
         Match               *
         Merge_Log           On
         Merge_Log_Key       log
         K8S-Logging.Exclude On
+
     [FILTER]
         Name            nest
         Match           *
         Operation       lift
         Nested_under    kubernetes
         Add_prefix      kubernetes.
+
     [FILTER]
         Name    modify
         Match   *
@@ -51,6 +56,7 @@ config:
         Remove  kubernetes.container_hash
         Remove  kubernetes.docker_id
         Remove  kubernetes.pod_id
+
     [FILTER]
         Name            nest
         Match           *
@@ -58,6 +64,7 @@ config:
         Wildcard        kubernetes.*
         Nest_under      kubernetes
         Remove_prefix   kubernetes.
+
     [FILTER]
         Name        nest
         Match       *
@@ -67,7 +74,8 @@ config:
         Wildcard    time
         Wildcard    stream
         Nest_under  json
-  outputs: |
+
+  outputs: |-
     [OUTPUT]
         Name            http
         Match           *
