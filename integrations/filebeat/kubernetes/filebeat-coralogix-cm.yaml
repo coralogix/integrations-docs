@@ -12,6 +12,8 @@ data:
       - type: kubernetes
         node: ${NODE_NAME}
         hints.enabled: true
+        labels.dedot: true
+        annotations.dedot: true
         hints.default_config:
           type: container
           paths:
