@@ -159,6 +159,7 @@ func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int 
 
 	// Build request
 	request, err := http.NewRequest(http.MethodPost, endpoint, &buffer)
+	request.Close = true
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Content-Encoding", "gzip")
 	request.Header.Set("private_key", config["private_key"])
