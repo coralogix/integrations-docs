@@ -64,7 +64,7 @@ resource "aws_lambda_function" "lambda_function" {
   source_code_hash = data.archive_file.function_archive.output_base64sha256
   role             = aws_iam_role.lambda_role.arn
   handler          = "index.handler"
-  runtime          = "nodejs10.x"
+  runtime          = "nodejs14.x"
   memory_size      = 1024
   timeout          = 30
   publish          = true
@@ -84,11 +84,15 @@ resource "aws_lambda_function" "lambda_function" {
 }
 
 resource "aws_lambda_permission" "lambda_function_permissions" {
+  count = data.aws_cloudwatch_log_group.selected_log_group.arn != "" ? 1 : 0
   function_name = aws_lambda_function.lambda_function.function_name
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   principal     = "logs.amazonaws.com"
-  source_arn    = data.aws_cloudwatch_log_group.selected_log_group.arn
+  // workaround for https://github.com/terraform-providers/terraform-provider-aws/issues/14630
+  // in aws provider 3.x 'aws_cloudwatch_log_group.lambda.arn' interpolates to something like 'arn:aws:logs:eu-west-1:000000000000:log-group:/aws/lambda/my-group'
+  // but we need 'arn:aws:logs:eu-west-1:000000000000:log-group:/aws/lambda/my-group:*'
+  source_arn = length(regexall(":\\*$", data.aws_cloudwatch_log_group.selected_log_group.arn)) == 1 ? data.aws_cloudwatch_log_group.selected_log_group.arn : "${data.aws_cloudwatch_log_group.selected_log_group.arn}:*"
   depends_on    = [
     aws_iam_role.lambda_role,
     aws_lambda_function.lambda_function
