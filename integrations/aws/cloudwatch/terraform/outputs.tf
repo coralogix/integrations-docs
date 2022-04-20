@@ -15,7 +15,9 @@ output "lambda_logs" {
 
 output "log_group" {
   description = "Watched log group"
-  value       = aws_cloudwatch_log_subscription_filter.log_group_trigger.log_group_name
+  value = {
+      for k, log_group_name in aws_cloudwatch_log_subscription_filter.log_group_trigger : k => log_group_name
+  }
 }
 
 output "app_name" {

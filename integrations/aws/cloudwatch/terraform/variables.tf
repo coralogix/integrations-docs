@@ -21,8 +21,8 @@ variable "newline_pattern" {
 }
 
 variable "log_group" {
-  type        = string
-  description = "The name of the CloudWatch log group to watch"
+  type        = list(string)
+  description = "The list of the CloudWatch log groups to watch"
 }
 
 variable "filter_pattern" {

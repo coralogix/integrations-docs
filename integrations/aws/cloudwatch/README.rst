@@ -75,9 +75,10 @@ Add this module to your manifest and change its options:
 
       private_key = "YOUR_PRIVATE_KEY"
       app_name    = "APP_NAME"
-      log_group   = "YOUR_LOG_GROUP_NAME"
+      log_group   = ["YOUR_LOG_GROUP_NAME"] 
     }
 
+log_group supports an Array of log_group_names to add as triggers.
 Download module and apply this changes:
 
 .. code-block:: bash

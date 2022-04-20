@@ -1,5 +1,6 @@
 data "aws_cloudwatch_log_group" "selected_log_group" {
-  name = var.log_group
+  count = length(var.log_group)
+  name = var.log_group[count.index]
 }
 
 data "http" "function_source" {
@@ -59,7 +60,7 @@ resource "aws_iam_role_policy" "lambda_role_policy" {
 
 resource "aws_lambda_function" "lambda_function" {
   function_name    = local.lambda_name
-  description      = "Ship logs to Coralogix from CW ${data.aws_cloudwatch_log_group.selected_log_group.name} log group"
+  description      = "Ship logs to Coralogix from CW  log group"
   filename         = data.archive_file.function_archive.output_path
   source_code_hash = data.archive_file.function_archive.output_base64sha256
   role             = aws_iam_role.lambda_role.arn
@@ -84,15 +85,12 @@ resource "aws_lambda_function" "lambda_function" {
 }
 
 resource "aws_lambda_permission" "lambda_function_permissions" {
-  count = data.aws_cloudwatch_log_group.selected_log_group.arn != "" ? 1 : 0
+  for_each = {for loggroup in data.aws_cloudwatch_log_group.selected_log_group: loggroup.name => loggroup}
   function_name = aws_lambda_function.lambda_function.function_name
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "AllowExecutionFromCloudWatch-${index(data.aws_cloudwatch_log_group.selected_log_group, each.value) + 1}"
   action        = "lambda:InvokeFunction"
   principal     = "logs.amazonaws.com"
-  // workaround for https://github.com/terraform-providers/terraform-provider-aws/issues/14630
-  // in aws provider 3.x 'aws_cloudwatch_log_group.lambda.arn' interpolates to something like 'arn:aws:logs:eu-west-1:000000000000:log-group:/aws/lambda/my-group'
-  // but we need 'arn:aws:logs:eu-west-1:000000000000:log-group:/aws/lambda/my-group:*'
-  source_arn = length(regexall(":\\*$", data.aws_cloudwatch_log_group.selected_log_group.arn)) == 1 ? data.aws_cloudwatch_log_group.selected_log_group.arn : "${data.aws_cloudwatch_log_group.selected_log_group.arn}:*"
+  source_arn    = "${each.value.arn}:*"
   depends_on    = [
     aws_iam_role.lambda_role,
     aws_lambda_function.lambda_function
@@ -101,7 +99,8 @@ resource "aws_lambda_permission" "lambda_function_permissions" {
 
 resource "aws_cloudwatch_log_subscription_filter" "log_group_trigger" {
   name            = local.lambda_name
-  log_group_name  = data.aws_cloudwatch_log_group.selected_log_group.name
+  for_each = toset(data.aws_cloudwatch_log_group.selected_log_group.*.name)
+  log_group_name  = each.value
   filter_pattern  = var.filter_pattern
   destination_arn = aws_lambda_function.lambda_function.arn
   depends_on = [
