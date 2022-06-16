@@ -30,12 +30,6 @@ data:
         Match               kube.*
         K8S-Logging.Exclude On
     
-    [FILTER]
-        Name    lua
-        Match   *
-        script  /fluent-bit/etc/functions.lua
-        call    dedot
-
     [OUTPUT]
         Name          coralogix
         Match         kube.*
