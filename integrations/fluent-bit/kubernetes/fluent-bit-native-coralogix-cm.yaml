@@ -74,7 +74,7 @@ data:
     [OUTPUT]
         Name            http
         Match           *
-        Host            api.coralogix.com
+        Host            ${CORALOGIX_API_URL}
         Port            443
         URI             /logs/rest/singles
         Format          json_lines
