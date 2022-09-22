@@ -15,6 +15,8 @@ import (
 
 // Import vendor libraries
 import (
+	"math/big"
+
 	"github.com/araddon/dateparse"
 	"github.com/fluent/fluent-bit-go/output"
 	jsoniter "github.com/json-iterator/go"
@@ -130,18 +132,12 @@ func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int 
 			continue
 		}
 
-		// Parse timestamp
-		timestamp, err := dateparse.ParseAny(extractField(jsonRecord, config["time_key"], time.Now().Format(time.RFC3339)))
-		if err != nil {
-			timestamp = time.Now()
-		}
-
 		// Add record to batch
 		batch = append(batch, map[string]interface{}{
 			"applicationName": extractField(jsonRecord, config["app_name_key"], config["app_name"]),
 			"subsystemName":   extractField(jsonRecord, config["sub_name_key"], config["sub_name"]),
 			"computerName":    extractField(jsonRecord, config["host_key"], hostname),
-			"timestamp":       timestamp.UnixNano() / 1000000,
+			"timestamp":       parseTimestamp(extractField(jsonRecord, config["time_key"], time.Now().Format(time.RFC3339))),
 			"text":            extractField(jsonRecord, config["log_key"], jsonRecord),
 		})
 	}
@@ -262,6 +258,21 @@ func extractField(jsonRecord string, key string, def string) string {
 		}
 		return subRecord
 	}
+}
+
+// parseTimestamp parses record date string into high
+// precision timestamp expected by Coralogix API
+func parseTimestamp(dateStr string) *big.Float {
+  timestamp, err := dateparse.ParseAny(dateStr)
+
+  if err != nil {
+    timestamp = time.Now()
+  }
+
+  return new(big.Float).Quo(
+    new(big.Float).SetInt64(timestamp.UnixNano()),
+    new(big.Float).SetInt64(1000000),
+  )
 }
 
 func main() {}
