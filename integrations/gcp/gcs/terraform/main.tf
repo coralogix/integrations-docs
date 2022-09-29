@@ -20,9 +20,9 @@ data "archive_file" "function_archive" {
 }
 
 resource "google_storage_bucket_object" "function_archive" {
-  name         = "gcsToCoralogix.zip"
-  bucket       = var.bucket_name
-  source       = data.archive_file.function_archive.output_path
+  name   = "gcsToCoralogix.zip"
+  bucket = coalesce(var.function_bucket_name, var.bucket_name)
+  source = data.archive_file.function_archive.output_path
 }
 
 resource "google_cloudfunctions_function" "coralogix_function" {
@@ -32,8 +32,9 @@ resource "google_cloudfunctions_function" "coralogix_function" {
   available_memory_mb   = 1024
   timeout               = 60
   entry_point           = "to_coralogix"
-  source_archive_bucket = var.bucket_name
+  source_archive_bucket = google_storage_bucket_object.function_archive.bucket
   source_archive_object = google_storage_bucket_object.function_archive.name
+
   event_trigger {
     resource            = var.bucket_name
     event_type          = "google.storage.object.finalize"
@@ -43,5 +44,4 @@ resource "google_cloudfunctions_function" "coralogix_function" {
     app_name    = var.app_name
     sub_name    = var.sub_name
   }
-  depends_on = [google_storage_bucket_object.function_archive]
 }
