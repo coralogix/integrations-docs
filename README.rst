@@ -38,7 +38,6 @@ Logs/Metrics collectors
 
 * `FluentD <integrations/fluentd/README.rst>`_
 * `Fluent-Bit <integrations/fluent-bit/README.rst>`_
-* `Logstash <https://github.com/coralogix/logstash-output-coralogix/blob/master/README.md>`_
 * `NXLog <integrations/nxlog/README.rst>`_
 * `Auditbeat <integrations/auditbeat/README.rst>`_
 * `Filebeat <integrations/filebeat/README.rst>`_
@@ -82,7 +81,6 @@ Google Cloud Platform
 ~~~~~~~~~~~~~~~~~~~~~
 
 * `Google Cloud Storage <integrations/gcp/gcs/README.rst>`_
-* `Google Cloud Pub/Sub <integrations/gcp/pubsub/README.rst>`_
 
 Other services
 ~~~~~~~~~~~~~~

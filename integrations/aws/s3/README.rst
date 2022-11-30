@@ -103,34 +103,6 @@ To setup the function, execute this:
         --bucket YOUR_BUCKET_NAME \
         --notification-configuration 'LambdaFunctionConfigurations=[{LambdaFunctionArn=FUNCTION_ARN,Events=[s3:ObjectCreated:*]}]'
 
-Terraform
-~~~~~~~~~
-
-`Here <https://github.com/coralogix/integrations-docs/tree/master/integrations/aws/s3/terraform>`_ is presented the ``Terraform`` module to deploy ``Lambda Function``.
-
-Add this module to your manifest and change its options:
-
-.. code-block:: terraform
-
-    provider "aws" {
-      region = "eu-west-1"
-    }
-
-    module "s3_to_coralogix" {
-      source =  "git::https://github.com/coralogix/integrations-docs.git//integrations/aws/s3/terraform"
-
-      private_key = "YOUR_PRIVATE_KEY"
-      app_name    = "APP_NAME"
-      sub_name    = "SUB_NAME"
-      bucket_name = "YOUR_BUCKET_NAME"
-    }
-
-Download module and apply this changes:
-
-.. code-block:: bash
-
-    $ terraform init
-    $ terraform apply
 
 CloudFormation
 ~~~~~~~~~~~~~~
